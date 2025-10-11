@@ -1,0 +1,17 @@
+const openai = new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY!,
+    dangerouslyAllowBrowser: true,
+  });
+  useEffect(() => {
+    const response = async () => {
+      const response = await openai.chat.completions.create({
+        model: 'qwen/qwen3-coder',
+        messages: [{ role: 'user', content: 'what is useState in react?' }],
+
+      });
+      console.log(response.usage?.total_tokens);
+      console.log(response.choices[0].message.content);
+    };
+    response();
+  }, []);
