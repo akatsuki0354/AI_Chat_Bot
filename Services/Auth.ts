@@ -81,11 +81,7 @@ export const syncUserToDatabase = async () => {
                     {
                         uid: userData.user.id,
                         email: userData.user.email,
-                        username:
-                            userData.user.user_metadata?.full_name ||
-                            userData.user.user_metadata?.name ||
-                            userData.user.user_metadata?.username ||
-                            "Anonymous",
+                        username: userData.user.user_metadata?.full_name || "",
                         avatar_url: userData.user.user_metadata?.avatar_url,
                     },
                 ],
