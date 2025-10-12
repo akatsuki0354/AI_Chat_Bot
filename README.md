@@ -1,4 +1,4 @@
-# AI Data Try - Authentication & User Management System
+# AI Chat Bot - Authentication & User Management System
 
 A modern Next.js application with Supabase authentication, featuring Google OAuth and email/password authentication with a clean, responsive UI.
 
