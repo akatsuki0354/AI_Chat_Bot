@@ -9,7 +9,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { useAuth } from '../Services/Auth';
+import { useAuth } from '../services/Auth';
 import { useState } from 'react';
 import { Google, LogoTransparentBg } from "@/assets/images"
 import Image from "next/image";

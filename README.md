@@ -391,7 +391,4 @@ The project uses Tailwind CSS 4 with custom configuration for:
 - `lucide-react`: Icon library
 - `class-variance-authority`: Component variants
 
-## 🤝 Contributing
----
 
-**Note**: This is a development project. Ensure all environment variables are properly configured before deployment.
