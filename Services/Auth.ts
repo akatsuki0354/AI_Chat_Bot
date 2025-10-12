@@ -7,12 +7,14 @@ export type AuthState = {
     signInWithGoogleLink: () => Promise<void>;
     signOut: () => Promise<void>;
     signUpWithEmail: (email: string, username: string, password: string) => Promise<void>;
+    signInWithEmail: (email: string, password: string) => Promise<void>;
 };
 
 export const useAuth = create<AuthState>((set) => ({
     user: null,
-    loading: true, // Start with loading true
+    loading: true,
 
+    // Google Sign-In
     signInWithGoogleLink: async () => {
         set({ loading: true });
         const { error } = await supabase.auth.signInWithOAuth({
@@ -23,28 +25,45 @@ export const useAuth = create<AuthState>((set) => ({
             console.error("Sign in error:", error);
             set({ loading: false });
         }
-        // Note: Don't set loading to false here as the auth state change will handle it
     },
 
+    // Sign out
     signOut: async () => {
         set({ loading: true });
         await supabase.auth.signOut();
         set({ user: null, loading: false });
     },
 
+    // Email/Password Sign-Up
     signUpWithEmail: async (email, username, password) => {
         set({ loading: true });
         const { error } = await supabase.auth.signUp({
             email,
             password,
             options: { data: { full_name: username } },
+
         });
         if (error) {
             console.error("Sign up error:", error);
             set({ loading: false });
         }
-        // Note: Don't set loading to false here as the auth state change will handle it
     },
+    // Email/Password Sign-In
+    signInWithEmail: async (email, password) => {
+        set({ loading: true });
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) {
+            console.error("Sign in error:", error);
+        } else {
+            console.log("User signed in:", data.user);
+        }
+        set({ loading: false });
+    },
+
 }));
 
 export const syncUserToDatabase = async () => {
@@ -54,7 +73,6 @@ export const syncUserToDatabase = async () => {
     if (userData?.user) {
         // Update Zustand store
         useAuth.setState({ user: userData.user, loading: false });
-
         // Insert or update user in Supabase
         const { data, error } = await supabase
             .from("users")
@@ -76,14 +94,14 @@ export const syncUserToDatabase = async () => {
             .select();
 
         if (error) console.error("Error creating/updating user:", error);
-        else console.log("✅ User inserted/updated:", data);
+        else console.log("User inserted/updated:", data);
     } else {
         useAuth.setState({ user: null, loading: false });
     }
     return { data: userData.user }
 }
 
-// ✅ Attach the listener OUTSIDE the create() function
+//  Attach the listener OUTSIDE the create() function
 supabase.auth.onAuthStateChange((event, session) => {
     console.log(event, session)
     if (event === 'SIGNED_IN') {

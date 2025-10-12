@@ -17,7 +17,11 @@ export function SignUpForm({
     className,
     ...props
 }: React.ComponentProps<"form">) {
-    const { loading, signInWithGoogleLink } = useAuth();
+    const { loading, signInWithGoogleLink, signUpWithEmail } = useAuth();
+    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [signingIn, setSigningIn] = useState(false);
     if (loading) return <p>Loading...</p>;
 
@@ -29,8 +33,22 @@ export function SignUpForm({
         }
         setSigningIn(true);
     };
+
+    const handleSignWithEmail = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await signUpWithEmail(email, username, password);
+            if (password !== confirmPassword) {
+                alert("Passwords do not match");
+                return;
+            }
+        } catch (error) {
+            console.error("Sign up error:", error);
+        }
+    };
+
     return (
-        <form className={cn("", className)} {...props}>
+        <form onSubmit={handleSignWithEmail} className={cn("", className)} {...props}>
             <FieldGroup>
                 <div className="flex flex-col gap-1 ">
                     <h1 className="text-2xl font-bold">Create your account</h1>
@@ -41,19 +59,19 @@ export function SignUpForm({
                 <div className="flex flex-col gap-3">
                     <Field className="gap-1">
                         <FieldLabel htmlFor="email">Email</FieldLabel>
-                        <Input type="email" placeholder="m@example.com" required />
+                        <Input type="email" onChange={e => setEmail(e.target.value)} placeholder="m@example.com" required />
                     </Field>
                     <Field className="gap-1">
                         <FieldLabel htmlFor="email">Username</FieldLabel>
-                        <Input type="text" placeholder="yourname123" required />
+                        <Input type="text" onChange={e => setUsername(e.target.value)} placeholder="yourname123" required />
                     </Field>
                     <Field className="gap-1">
                         <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <Input type="password" placeholder="••••••••" required />
+                        <Input type="password" onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
                     </Field>
                     <Field className="gap-1">
                         <FieldLabel htmlFor="password">Confirm Password</FieldLabel>
-                        <Input type="password" placeholder="••••••••" required />
+                        <Input type="password" onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" required />
                     </Field>
                 </div>
                 <Field>

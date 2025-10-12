@@ -17,9 +17,20 @@ export function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { loading, signInWithGoogleLink } = useAuth();
+  const { loading, signInWithGoogleLink, signInWithEmail } = useAuth();
   const [signingIn, setSigningIn] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   if (loading) return <p>Loading...</p>;
+
+  const handleSignWithEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await signInWithEmail(email, password);
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
+  }
 
   const handleSignInWithGoogle = async () => {
     setSigningIn(true);
@@ -32,17 +43,17 @@ export function SignInForm({
     }
   };
   return (
-    <form className={cn("flex flex-col gap-2", className)} {...props}>
+    <form onSubmit={handleSignWithEmail} className={cn("flex flex-col gap-2", className)} {...props}>
       <FieldGroup>
         <div className="flex flex-col ">
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+            Enter your email below to login to your accountz
           </p>
         </div>
         <Field className="gap-1">
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="m@example.com" required />
         </Field>
         <Field className="gap-1">
           <div className="flex items-center">
@@ -54,7 +65,7 @@ export function SignInForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input id="password" value={password} onChange={e => setPassword(e.target.value)} type="password" required />
         </Field>
         <Field>
           <Button type="submit">Login</Button>
@@ -62,7 +73,7 @@ export function SignInForm({
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           <Button variant="outline" type="button" onClick={handleSignInWithGoogle}>
-            <Image src={Google} alt="Google" width={32} height={32}/>
+            <Image src={Google} alt="Google" width={32} height={32} />
             {signingIn ? 'Signing in...' : 'SignIn with Google'}
           </Button>
           <FieldDescription className="text-center">
