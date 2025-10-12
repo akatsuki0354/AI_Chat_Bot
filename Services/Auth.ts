@@ -11,38 +11,41 @@ export type AuthState = {
 
 export const useAuth = create<AuthState>((set) => ({
     user: null,
-    loading: false,
+    loading: true, // Start with loading true
 
     signInWithGoogleLink: async () => {
+        set({ loading: true });
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: { redirectTo: "http://localhost:3000" },
         });
-        if (error) console.error("Sign in error:", error);
-        supabase.auth.onAuthStateChange(async (_event) => {
-            const { data: userData } = await supabase.auth.getUser();
-            useAuth.setState({
-                user: userData?.user ?? null,
-                loading: false,
-            });
-        });
+        if (error) {
+            console.error("Sign in error:", error);
+            set({ loading: false });
+        }
+        // Note: Don't set loading to false here as the auth state change will handle it
     },
 
     signOut: async () => {
+        set({ loading: true });
         await supabase.auth.signOut();
-        set({ user: null });
+        set({ user: null, loading: false });
     },
 
     signUpWithEmail: async (email, username, password) => {
-        await supabase.auth.signUp({
+        set({ loading: true });
+        const { error } = await supabase.auth.signUp({
             email,
             password,
             options: { data: { full_name: username } },
         });
+        if (error) {
+            console.error("Sign up error:", error);
+            set({ loading: false });
+        }
+        // Note: Don't set loading to false here as the auth state change will handle it
     },
 }));
-
-
 
 export const syncUserToDatabase = async () => {
     const { data: userData, error } = await supabase.auth.getUser()
@@ -85,6 +88,15 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log(event, session)
     if (event === 'SIGNED_IN') {
         syncUserToDatabase().catch((err) => console.error('Sync failed', err))
+    } else if (event === 'SIGNED_OUT') {
+        useAuth.setState({ user: null, loading: false });
+    } else if (event === 'INITIAL_SESSION') {
+        // Handle initial session check
+        if (session?.user) {
+            syncUserToDatabase().catch((err) => console.error('Sync failed', err))
+        } else {
+            useAuth.setState({ user: null, loading: false });
+        }
     }
 })
 

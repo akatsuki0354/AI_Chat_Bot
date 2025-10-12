@@ -22,12 +22,14 @@ export function SignInForm({
   if (loading) return <p>Loading...</p>;
 
   const handleSignInWithGoogle = async () => {
+    setSigningIn(true);
     try {
       await signInWithGoogleLink();
+    } catch (error) {
+      console.error("Sign in error:", error);
     } finally {
       setSigningIn(false);
     }
-    setSigningIn(true);
   };
   return (
     <form className={cn("flex flex-col gap-2", className)} {...props}>
