@@ -3,8 +3,9 @@ import { Input, Button } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { timeAgo } from "@/utils";
 function page() {
-    const { addChat, getChats } = useChatStore();
+    const { addChat, getChats, deleteChat } = useChatStore();
     const [chats, setChats] = useState<string[] | null>([]);
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -35,33 +36,19 @@ function page() {
         }
     };
 
-    function timeAgo(dateString: string) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-        const intervals = {
-            year: 31536000,
-            month: 2592000,
-            week: 604800,
-            day: 86400,
-            hour: 3600,
-            minute: 60,
-        };
-
-        if (seconds < 5) return "just now";
-
-        for (const [unit, value] of Object.entries(intervals)) {
-            const count = Math.floor(seconds / value);
-            if (count >= 1) {
-                return `${count}${unit[0]}${unit === "hour" ? "r" : ""} ago`;
-                // Example: 2hr ago, 3d ago, 1y ago
-            }
+    // Function to handle deleting a chat
+    const handleDelete = async (chatId: string) => {
+        try {
+            setLoading(true);
+            await deleteChat(chatId);
+            const updatedChats = await getChats();
+            setChats(updatedChats);
+        } catch (error) {
+            console.error("Error deleting chat:", error);
+        } finally {
+            setLoading(false);
         }
-
-        return `${seconds}s ago`;
-    }
-
+    };
 
     return (
         <ProtectedLayout>
@@ -88,11 +75,12 @@ function page() {
                                     <div className="text-gray-400 text-xs text-right mt-2">
                                         {timeAgo(chat.created_at)}
                                     </div>
+                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id)}>Delete</Button>
                                 </div>
-
                             </div>
 
                         ))}
+
                     </div>
                 </div>
 
