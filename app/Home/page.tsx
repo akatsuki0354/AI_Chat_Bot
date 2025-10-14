@@ -8,7 +8,8 @@ function page() {
     const { addChat, getChats, deleteChat } = useChatStore();
     const [chats, setChats] = useState<string[] | null>([]);
     const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<null | "sending" | "deleting">(null);
+    const [loading, setLoading] = useState<null | "sending">(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
 
     // Scroll to bottom when chats change
@@ -44,7 +45,7 @@ function page() {
     // Function to handle deleting a chat
     const handleDelete = async (chatId: string) => {
         try {
-            setLoading("deleting");
+            setDeletingId(chatId);
             await deleteChat(chatId);
             const updatedChats = await getChats();
             setChats(updatedChats);
@@ -80,7 +81,7 @@ function page() {
                                     <div className="text-gray-400 text-xs text-right mt-2">
                                         {timeAgo(chat.created_at)}
                                     </div>
-                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id)}>{loading === "deleting" ? "Deleting..." : "Delete"}</Button>
+                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id)}>{deletingId === chat.id ? "Deleting..." : "Delete"}</Button>
                                 </div>
                             </div>
 
