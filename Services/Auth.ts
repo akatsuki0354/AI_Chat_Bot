@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import supabase from "@/lib/supabase";
 
+
+// Define the AuthState type
 export type AuthState = {
     user: any | null;
     loading: boolean;
@@ -66,6 +68,7 @@ export const useAuth = create<AuthState>((set) => ({
 
 }));
 
+// Function to sync user state with Supabase and Zustand
 export const syncUserToDatabase = async () => {
     const { data: userData, error } = await supabase.auth.getUser()
     if (error || !userData.user) return { error }
@@ -97,7 +100,7 @@ export const syncUserToDatabase = async () => {
     return { data: userData.user }
 }
 
-//  Attach the listener OUTSIDE the create() function
+// Listen to auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
     console.log(event, session)
     if (event === 'SIGNED_IN') {

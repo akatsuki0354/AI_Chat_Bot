@@ -9,9 +9,7 @@ import { AppSidebar } from "./app-sidebar";
 import { NavActions } from "./nav-actions";
 import { NavFavorites } from "./nav-favorites";
 import { NavMain } from "./nav-main";
-import { NavSecondary } from "./nav-secondary";
 import { TeamSwitcher } from "./team-switcher";
-import { ChatHistory } from "./chat-history";
 import { Skeleton } from "./ui/skeleton";
 import { Sheet } from "./ui/sheet";
 import { DropdownMenu } from "./ui/dropdown-menu";
@@ -20,6 +18,6 @@ import Loading from "./loading";
 
 export {
     Button, Input, Field, Label, Separator, Loading, Breadcrumb, Sidebar, AppSidebar, NavActions,
-    NavFavorites, NavMain, NavSecondary, TeamSwitcher, ChatHistory, Skeleton, Sheet, DropdownMenu,
+    NavFavorites, NavMain, TeamSwitcher, Skeleton, Sheet, DropdownMenu,
     Tooltip
 };
