@@ -1,16 +1,20 @@
 import ProtectedLayout from "@/components/PretectedLayout"
 import { Input, Button } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
 function page() {
     const { addChat, getChats, deleteChat } = useChatStore();
     const [chats, setChats] = useState<string[] | null>([]);
     const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<null | "sending" | "deleting">(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
 
-
+    // Scroll to bottom when chats change
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chats]);
 
     // Fetch chats on component mount
     useEffect(() => {
@@ -22,31 +26,32 @@ function page() {
     }, [getChats]);
 
     // Function to handle sending a message
-    const handleSend = async () => {
+    const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setMessage("");
         try {
-            setLoading(true);
+            setLoading("sending");
             await addChat(message);
-            setMessage("");
             const updatedChats = await getChats();
             setChats(updatedChats);
         } catch (error) {
             console.error("Error sending message:", error);
         } finally {
-            setLoading(false);
+            setLoading(null);
         }
     };
 
     // Function to handle deleting a chat
     const handleDelete = async (chatId: string) => {
         try {
-            setLoading(true);
+            setLoading("deleting");
             await deleteChat(chatId);
             const updatedChats = await getChats();
             setChats(updatedChats);
         } catch (error) {
             console.error("Error deleting chat:", error);
         } finally {
-            setLoading(false);
+            setLoading(null);
         }
     };
 
@@ -75,21 +80,30 @@ function page() {
                                     <div className="text-gray-400 text-xs text-right mt-2">
                                         {timeAgo(chat.created_at)}
                                     </div>
-                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id)}>Delete</Button>
+                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id)}>{loading === "deleting" ? "Deleting..." : "Delete"}</Button>
                                 </div>
                             </div>
 
                         ))}
-
+                        <div ref={bottomRef} />
                     </div>
                 </div>
 
-                <div className="mx-auto w-full max-w-3xl">
-                    <div className="flex gap-2">
-                        <Input type="text" placeholder="Ask Anything.." value={message} onChange={(e) => setMessage(e.target.value)} />
-                        <Button onClick={handleSend}>{loading ? "Sending..." : "Send"}</Button>
+                <form onSubmit={handleSend}>
+                    <div className="mx-auto w-full max-w-3xl">
+                        {loading === "sending" &&
+                            <div className="flex ">
+                                <div className="flex gap-5 text-gray-900 text-center">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mx-auto"></div>
+                                    <p>thinking...</p>
+                                </div>
+                            </div>}
+                        <div className="flex gap-2">
+                            <Input type="text" placeholder="Ask Anything.." value={message} onChange={(e) => setMessage(e.target.value)} />
+                            <Button >Send</Button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
 
         </ProtectedLayout>
