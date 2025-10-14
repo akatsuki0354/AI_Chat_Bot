@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Search,
   Sparkles,
+  Edit
 } from "lucide-react"
 import { NavMain } from '@/components/nav-main'
 
@@ -41,6 +42,12 @@ const data = {
       title: "Dashboard",
       url: "#",
       icon: LayoutDashboard,
+      badge: "10",
+    },
+     {
+      title: "New Chat",
+      url: "#",
+      icon: Edit,
       badge: "10",
     },
   ],
