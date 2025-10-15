@@ -4,7 +4,6 @@ import { useChatStore } from "@/services/ChatsServices"
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
-import supabase from "@/lib/supabase";
 function page() {
     const { addChat, getChats, deleteChat } = useChatStore();
     const [chats, setChats] = useState<string[] | null>([]);
@@ -57,18 +56,17 @@ function page() {
         }
     };
 
-
-
     return (
         <ProtectedLayout>
+
             <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
                 <div className="chats overflow-y-auto flex flex-end">
                     <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">
-                        {chats?.map((chat: any, index: number) => (
-                            <div key={index} className="flex flex-col gap-4">
+                        {Object.entries(chats || {}).map(([id, chat]: any) => (
+                            <div key={id} className="flex flex-col gap-4">
                                 {/* User message (left side) */}
                                 <div className="self-end bg-blue-100 p-4 rounded-lg shadow-md ">
-                                    <div className="mb-2">{chat.userChat}</div>
+                                    <div className="mb-2">{chat.user}</div>
                                     <div className="text-gray-500 text-sm">{timeAgo(chat.created_at)}</div>
 
                                 </div>
@@ -77,7 +75,7 @@ function page() {
                                 <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
                                     <div className="prose prose-sm">
                                         <ReactMarkdown>
-                                            {chat.botResponse}
+                                            {chat.bot}
                                         </ReactMarkdown>
                                     </div>
                                     <div className="text-gray-400 text-xs text-right mt-2">
@@ -103,7 +101,7 @@ function page() {
                             </div>}
                         <div className="flex gap-2">
                             <Input type="text" placeholder="Ask Anything.." value={message} onChange={(e) => setMessage(e.target.value)} />
-                            <Button >Send</Button>
+                            <Button disabled={loading === "sending" || message.trim() === ""}>Send</Button>
                         </div>
                     </div>
                 </form>
