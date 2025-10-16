@@ -36,9 +36,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navMain = [
     { title: "Search", url: "#", icon: Search },
     { title: "Ask AI", url: "#", icon: Sparkles },
-    { title: "Home", url: "/", icon: Home, isActive: true },
     { title: "Dashboard", url: "#", icon: LayoutDashboard, badge: "10" },
-    { title: "New Chat", url: "#", icon: Edit },
+    { title: "New Chat", url: "/", icon: Edit },
   ]
 
   // Convert chats from Supabase into ChatHistory format

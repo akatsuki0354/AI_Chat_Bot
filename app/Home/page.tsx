@@ -5,10 +5,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 function page() {
     const { addChat } = useChatStore();
-
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<null | "sending">(null);
     const routes = useRouter();
+
     // Function to handle sending a message
     const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -17,6 +17,7 @@ function page() {
         setLoading("sending");
 
         try {
+
             // Call addChat and get the new conversation ID if created
             const newChatId = await addChat(message);
 
