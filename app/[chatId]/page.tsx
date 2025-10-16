@@ -38,6 +38,9 @@ function Page() {
         .select("*")
         .eq("id", chatId)
         .single();
+        if(!data){
+          routes.push('/')
+        }
       if (error) {
         console.error("Error fetching chat:", error);
         setChat(null);
@@ -90,7 +93,6 @@ function Page() {
         <div className="chats overflow-y-auto flex flex-end">
           <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">
             {loading && <p>Loading chat...</p>}
-            {!loading && !chat && <p>No chat found.</p>}
             {!loading && chat && (
               <div className="flex flex-col gap-4">
                 {(chat.chats || []).map((msg: any, idx: number) => (
