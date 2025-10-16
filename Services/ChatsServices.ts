@@ -35,7 +35,9 @@ export const useChatStore = create<Chat>((set, get) => ({
     aiResponse: async (userChat) => {
         const response = await openai.chat.completions.create({
             model: 'openai/gpt-oss-20b',
-            messages: [{ role: 'user', content: userChat }],
+            messages: [{ role: 'user', content: userChat },
+            ],
+            reasoning_effort: 'high',
         });
         return response.choices[0].message.content;
     },
@@ -104,7 +106,6 @@ export const useChatStore = create<Chat>((set, get) => ({
             .from('convo')
             .select('id, chats')
             .eq("uid", user?.id || null)
-        console.log(chats);
         if (error) {
             console.error("Error fetching chats:", error);
             return [];
