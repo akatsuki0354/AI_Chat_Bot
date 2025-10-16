@@ -1,6 +1,7 @@
 import supabase from "@/lib/supabase";
 import { create } from "zustand";
 import OpenAI from 'openai';
+
 // Initialize OpenAI client
 const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
@@ -75,7 +76,7 @@ export const useChatStore = create<Chat>((set, get) => ({
                 return null;
             }
 
-            return convoId; // return existing convo ID
+            return convoId;
         }
 
         // Create new conversation
