@@ -52,7 +52,7 @@ export const useChatStore = create<Chat>((set, get) => ({
 
         const convoId = get().currentConvoId;
 
-        // ✅ Update existing conversation
+        // Update existing conversation
         if (convoId) {
             const { data: existing, error } = await supabase
                 .from('convo')
@@ -77,10 +77,10 @@ export const useChatStore = create<Chat>((set, get) => ({
                 return null;
             }
 
-            return convoId; // ✅ return existing convo ID
+            return convoId; // return existing convo ID
         }
 
-        // ✅ Create new conversation
+        // Create new conversation
         const { data: inserted, error: insertError } = await supabase
             .from('convo')
             .insert([
@@ -95,7 +95,7 @@ export const useChatStore = create<Chat>((set, get) => ({
         }
 
         set({ currentConvoId: inserted.id });
-        return inserted.id; // ✅ return new convo ID
+        return inserted.id;
     },
 
 
