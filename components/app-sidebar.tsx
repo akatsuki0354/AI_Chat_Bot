@@ -18,18 +18,18 @@ import {
 } from "@/components/ui/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getChats } = useChatStore()
+  const { getChatsHistory } = useChatStore()
   const [chats, setChats] = useState<any[]>([])
 
   // Fetch chats when component mounts
   useEffect(() => {
     const fetchChats = async () => {
-      const data = await getChats()
+      const data = await getChatsHistory()
       if (data) setChats(data)
         console.log("chats in sidebar: ", data);
     }
     fetchChats()
-  }, [getChats])
+  }, [getChatsHistory])
 
   // Sidebar nav items
   const navMain = [

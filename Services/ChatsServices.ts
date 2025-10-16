@@ -33,7 +33,7 @@ export type Chat = {
     setCurrentConvoId: (id: string | null) => void;
     addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<AIResponse>;
-    getChats: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
+    getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
 };
 
@@ -116,8 +116,8 @@ export const useChatStore = create<Chat>((set, get) => ({
     },
 
 
-    // Function to get chats from the database
-    getChats: async () => {
+    //Function to get chats History from the database
+    getChatsHistory: async () => {
         let { data: chats, error } = await supabase
             .from('convo')
             .select('id, chats')

@@ -8,7 +8,7 @@ function page() {
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<null | "sending">(null);
     const routes = useRouter();
-
+    
     // Function to handle sending a message
     const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
