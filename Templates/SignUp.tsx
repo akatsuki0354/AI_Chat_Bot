@@ -17,13 +17,13 @@ export function SignUpForm({
     className,
     ...props
 }: React.ComponentProps<"form">) {
-    const { loading, signInWithGoogleLink, signUpWithEmail } = useAuth();
+    const { signInWithGoogleLink, signUpWithEmail } = useAuth();
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [signingIn, setSigningIn] = useState(false);
-    if (loading) return <p>Loading...</p>;
+
 
     const handleSignInWithGoogle = async () => {
         try {

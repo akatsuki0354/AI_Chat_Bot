@@ -1,3 +1,4 @@
+"use client";
 import ProtectedLayout from "@/components/PretectedLayout"
 import { Input, Button } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"

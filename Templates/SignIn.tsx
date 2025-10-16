@@ -17,11 +17,11 @@ export function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { loading, signInWithGoogleLink, signInWithEmail } = useAuth();
+  const {signInWithGoogleLink, signInWithEmail } = useAuth();
   const [signingIn, setSigningIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  if (loading) return <p>Loading...</p>;
+ 
 
   const handleSignWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
