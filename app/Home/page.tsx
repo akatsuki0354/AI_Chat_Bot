@@ -4,6 +4,7 @@ import { useChatStore } from "@/services/ChatsServices"
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
+
 function page() {
     const { addChat, getChats, deleteChat } = useChatStore();
     const [chats, setChats] = useState<string[] | null>([]);
@@ -16,6 +17,8 @@ function page() {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chats]);
+
+
 
     // Fetch chats on component mount
     useEffect(() => {
@@ -59,7 +62,7 @@ function page() {
 
     return (
         <ProtectedLayout>
-
+          
             <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
                 <div className="chats overflow-y-auto flex flex-end">
                     <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">

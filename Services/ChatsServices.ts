@@ -29,10 +29,10 @@ export const useChatStore = create<Chat>((set, get) => ({
 
     // In-memory convo session id; resets on page refresh
     currentConvoId: null,
-    setCurrentConvoId: (id: string | null) => set({ currentConvoId: id }),
+    setCurrentConvoId: (id) => set({ currentConvoId: id }),
 
     // Function to get AI response from OpenAI
-    aiResponse: async (userChat: string) => {
+    aiResponse: async (userChat) => {
         const response = await openai.chat.completions.create({
             model: 'openai/gpt-oss-20b',
             messages: [{ role: 'user', content: userChat }],
@@ -41,7 +41,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     },
 
     // Function to add a chat to the database
-    addChat: async (userChat: string) => {
+    addChat: async (userChat) => {
         const botChat = await useChatStore.getState().aiResponse(userChat);
         const newEntry = { userChat: userChat, botResponse: botChat, created_at: new Date().toISOString() } as any;
         const convoId = get().currentConvoId;
@@ -114,7 +114,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     },
 
     // Function to delete a chat from the database
-    deleteChat: async (chatId: string) => {
+    deleteChat: async (chatId) => {
         const { data, error } = await supabase
             .from('convo')
             .delete()
