@@ -34,7 +34,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     // Function to get AI response from OpenAI
     aiResponse: async (userChat: string) => {
         const response = await openai.chat.completions.create({
-            model: 'alibaba/tongyi-deepresearch-30b-a3b',
+            model: 'openai/gpt-oss-20b',
             messages: [{ role: 'user', content: userChat }],
         });
         return response.choices[0].message.content;
@@ -43,7 +43,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     // Function to add a chat to the database
     addChat: async (userChat: string) => {
         const botChat = await useChatStore.getState().aiResponse(userChat);
-        const newEntry = { userChat: userChat, botResponse: botChat } as any;
+        const newEntry = { userChat: userChat, botResponse: botChat, created_at: new Date().toISOString() } as any;
         const convoId = get().currentConvoId;
 
         if (convoId) {
@@ -84,7 +84,7 @@ export const useChatStore = create<Chat>((set, get) => ({
             .insert([
                 {
                     uid: user?.id || null,
-                    chats: [newEntry]
+                    chats: [newEntry],
                 }
             ])
             .select('id, chats')
@@ -105,7 +105,7 @@ export const useChatStore = create<Chat>((set, get) => ({
             .from('convo')
             .select('id, chats')
             .eq("uid", user?.id || null)
-            console.log(chats);
+        console.log(chats);
         if (error) {
             console.error("Error fetching chats:", error);
             return [];
@@ -118,8 +118,7 @@ export const useChatStore = create<Chat>((set, get) => ({
         const { data, error } = await supabase
             .from('convo')
             .delete()
-            .eq("id", chatId);
-            
+            .eq("id", chatId)
         if (error) {
             console.error("Error deleting chat:", error);
             console.log(chatId);

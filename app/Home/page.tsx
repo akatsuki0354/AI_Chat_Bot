@@ -22,8 +22,8 @@ function page() {
         const fetchChats = async () => {
             const chats = await getChats();
             setChats(chats ?? [] as any);
+            console.log("chats : ", chats ?? "no chats");
         };
-        console.log(chats);
         fetchChats();
     }, [getChats]);
 
@@ -63,33 +63,38 @@ function page() {
             <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
                 <div className="chats overflow-y-auto flex flex-end">
                     <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">
-                        {chats?.map((chat: any, index: number) => (
-                            <div key={index} className="flex flex-col gap-4">
-                                {/* User message (left side) */}
-                                <div className="self-end bg-blue-100 p-4 rounded-lg shadow-md ">
-                                    <div className="mb-2">{chat.chats[index]?.userChat ?? ""}</div>
-                                    <div className="text-gray-500 text-sm">{timeAgo(chat.created_at ?? "")}</div>
+                        {chats?.map((chatItem: any) => (
+                            <div key={chatItem.id} className="flex flex-col gap-4">
+                                {chatItem.chats.map((message: any, idx: number) => (
+                                    <div key={idx} className="flex flex-col gap-2">
+                                        {/* User message */}
+                                        <div className="self-end bg-blue-100 p-4 rounded-lg shadow-md">
+                                            <div className="mb-2">{message.userChat}</div>
+                                            <div className="text-gray-500 text-sm">{timeAgo(message.created_at)}</div>
+                                        </div>
 
-                                </div>
-
-                                {/* Bot message (right side) */}
-                                <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
-                                    <div className="prose prose-sm">
-                                        <ReactMarkdown>
-                                            {chat.chats[index]?.botResponse ?? ""}
-                                            
-                                        </ReactMarkdown>
+                                        {/* Bot message */}
+                                        <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
+                                            <div className="prose prose-sm">
+                                                <ReactMarkdown>{message.botResponse}</ReactMarkdown>
+                                            </div>
+                                            <div className="text-gray-400 text-xs text-right mt-2">
+                                                {timeAgo(message.created_at)}
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="mt-2 text-red-500"
+                                                onClick={() => handleDelete(chatItem.id)}
+                                            >
+                                                {deletingId === chatItem.id ? "Deleting..." : "Delete"}
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-400 text-xs text-right mt-2">
-                                    
-                                        {timeAgo(chat.created_at ?? "")}
-                                    </div>
-                                  
-                                    <Button variant="ghost" size="sm" className="mt-2 text-red-500" onClick={() => handleDelete(chat.id ?? "")}>{deletingId === chat.id ? "Deleting..." : "Delete"}</Button>
-                                </div>
+                                ))}
                             </div>
-
                         ))}
+
                         <div ref={bottomRef} />
                     </div>
                 </div>
@@ -102,7 +107,8 @@ function page() {
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mx-auto"></div>
                                     <p>thinking...</p>
                                 </div>
-                            </div>}
+                            </div>
+                        }
                         <div className="flex gap-2">
                             <Input type="text" placeholder="Ask Anything.." value={message} onChange={(e) => setMessage(e.target.value)} />
                             <Button >Send</Button>
