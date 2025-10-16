@@ -103,7 +103,7 @@ function Page() {
                     </div>
                     <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
                       <div className="prose prose-sm">
-                        <ReactMarkdown>{msg.botResponse}</ReactMarkdown>
+                        <ReactMarkdown>{msg.botResponse?.text ?? ""}</ReactMarkdown>
                       </div>
                       <div className="text-gray-400 text-xs text-right mt-2">
                         {timeAgo(msg.created_at)}

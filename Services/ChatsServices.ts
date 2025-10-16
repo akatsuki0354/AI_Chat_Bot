@@ -15,12 +15,25 @@ const {
 } = await supabase.auth.getUser();
 
 // Define the Chat type
+export type AIResponse = {
+    text: string;
+    totalTokens: number;
+    promptTokens: number;
+    completionTokens: number;
+};
+
+export type ChatMessage = {
+    userChat: string;
+    botResponse: AIResponse;
+    created_at: string;
+};
+
 export type Chat = {
     currentConvoId: string | null;
     setCurrentConvoId: (id: string | null) => void;
     addChat: (userChat: string) => Promise<string | null>;
-    aiResponse: (userChat: string) => Promise<string | null>;
-    getChats: () => Promise<{ id: string, chats: string[] }[] | null>;
+    aiResponse: (userChat: string) => Promise<AIResponse>;
+    getChats: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
 };
 
@@ -35,11 +48,14 @@ export const useChatStore = create<Chat>((set, get) => ({
     aiResponse: async (userChat) => {
         const response = await openai.chat.completions.create({
             model: 'openai/gpt-oss-20b',
-            messages: [{ role: 'user', content: userChat },
-            ],
-            reasoning_effort: 'high',
+            messages: [{ role: 'user', content: userChat }],
         });
-        return response.choices[0].message.content;
+
+        const promptTokens = response.usage?.prompt_tokens ?? 0;
+        const completionTokens = response.usage?.completion_tokens ?? 0;
+        const totalTokens = response.usage?.total_tokens ?? promptTokens + completionTokens;
+        const text = response.choices?.[0]?.message?.content ?? '';
+        return { text, totalTokens, promptTokens, completionTokens };
     },
 
     // Function to add a chat to the database
@@ -110,7 +126,8 @@ export const useChatStore = create<Chat>((set, get) => ({
             console.error("Error fetching chats:", error);
             return [];
         }
-        return chats;
+        // Ensure the output is typed and not null
+        return (chats ?? []) as { id: string, chats: ChatMessage[] }[];
     },
 
     // Function to delete a chat from the database
