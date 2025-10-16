@@ -22,7 +22,7 @@ function page() {
             const newChatId = await addChat(message);
 
             // If a new conversation was created, navigate to its page
-            if (newChatId == null) {
+            if (newChatId) {
                 routes.push(`/${newChatId}`);
             }
 

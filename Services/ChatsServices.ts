@@ -17,13 +17,11 @@ const {
 export type Chat = {
     currentConvoId: string | null;
     setCurrentConvoId: (id: string | null) => void;
-    addChat: (userChat: string) => Promise<void>;
+    addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<string | null>;
     getChats: () => Promise<{ id: string, chats: string[] }[] | null>;
     deleteChat: (chatId: string) => Promise<void>;
 };
-
-
 
 // Create the chat store using Zustand
 export const useChatStore = create<Chat>((set, get) => ({
