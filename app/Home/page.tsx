@@ -36,18 +36,20 @@ function page() {
     // Function to handle sending a message
     const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         if (!message.trim()) return;
-
         setMessage("");
         setLoading("sending");
+
         try {
+            // Call addChat and get the new conversation ID if created
             const newChatId = await addChat(message);
 
+            // If a new conversation was created, navigate to its page
             if (newChatId != null) {
                 routes.push(`/${newChatId}`);
             }
 
+            // Refresh chats list
             const updatedChats = await getChats();
             setChats(updatedChats as any);
         } catch (error) {

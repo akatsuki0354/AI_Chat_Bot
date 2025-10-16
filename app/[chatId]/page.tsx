@@ -57,7 +57,7 @@ function Page() {
         chat.chats.map((message: any, index: number) => (
           <div key={index} className="p-2 border-b">
             <p><strong>User:</strong> {message.userChat}</p>
-            <p><strong>Bot:</strong> {message.botChat}</p>
+            <p><strong>Bot:</strong> {message.botResponse}</p>
           </div>
         ))
       ) : (
