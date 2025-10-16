@@ -1,8 +1,7 @@
 "use client"
 
-import * as React from "react"
+import React,{useEffect, useState} from "react"
 import {
-  Home,
   LayoutDashboard,
   Search,
   Sparkles,
@@ -20,10 +19,10 @@ import {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { getChats } = useChatStore()
-  const [chats, setChats] = React.useState<any[]>([])
+  const [chats, setChats] = useState<any[]>([])
 
   // Fetch chats when component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchChats = async () => {
       const data = await getChats()
       if (data) setChats(data)

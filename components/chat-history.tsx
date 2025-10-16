@@ -12,8 +12,7 @@ function ChatHistory({ groups }: { groups: any }) {
                         {group.chats.map((chat: any) => (
                             <a
                                 key={chat.id}
-                                href={chat.url}
-                            >
+                                href={chat.url}>
                                 <div className='px-4 py-2 hover:bg-accent cursor-pointer rounded-md mb-1'>
                                     <h1 className='text-sm line-clamp-1'>
                                         {chat.title}
