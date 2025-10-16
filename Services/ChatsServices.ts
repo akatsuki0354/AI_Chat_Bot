@@ -33,6 +33,7 @@ export type Chat = {
     setCurrentConvoId: (id: string | null) => void;
     addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<AIResponse>;
+    getChatById: (chatId: string) => Promise<{ id: string, chats: ChatMessage[] } | null>;
     getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
 };
@@ -56,6 +57,20 @@ export const useChatStore = create<Chat>((set, get) => ({
         const totalTokens = response.usage?.total_tokens ?? promptTokens + completionTokens;
         const text = response.choices?.[0]?.message?.content ?? '';
         return { text, totalTokens, promptTokens, completionTokens };
+    },
+
+    // Function to fetch a single chat by id
+    getChatById: async (chatId) => {
+        const { data, error } = await supabase
+            .from('convo')
+            .select('*')
+            .eq('id', chatId)
+            .single();
+        if (error) {
+            console.error('Error fetching chat by id:', error);
+            return null;
+        }
+        return data as { id: string, chats: ChatMessage[] };
     },
 
     // Function to add a chat to the database

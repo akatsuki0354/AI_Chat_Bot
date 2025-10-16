@@ -5,7 +5,6 @@ import { Input, Button } from "@/components/index";
 import { useChatStore } from "@/services/ChatsServices";
 import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
-import supabase from "@/lib/supabase";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -33,20 +32,11 @@ function Page() {
     setCurrentConvoId(chatId);
     const fetchChat = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("convo")
-        .select("*")
-        .eq("id", chatId)
-        .single();
+      const data = await useChatStore.getState().getChatById(chatId);
       if (!data && chatId != 'dashboard') {
         routes.push('/')
       }
-      if (error) {
-        console.error("Error fetching chat:", error);
-        setChat(null);
-      } else {
-        setChat(data);
-      }
+      setChat(data);
       setLoading(false);
     };
     fetchChat();
@@ -61,12 +51,8 @@ function Page() {
     setMessage("");
     try {
       await addChat(localMessage);
-      const { data } = await supabase
-        .from("convo")
-        .select("*")
-        .eq("id", chatId)
-        .single();
-      setChat(data);
+      const updated = await useChatStore.getState().getChatById(chatId);
+      setChat(updated);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
