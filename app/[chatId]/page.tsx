@@ -38,9 +38,9 @@ function Page() {
         .select("*")
         .eq("id", chatId)
         .single();
-        if(!data){
-          routes.push('/')
-        }
+      if (!data && chatId != 'dashboard') {
+        routes.push('/')
+      }
       if (error) {
         console.error("Error fetching chat:", error);
         setChat(null);

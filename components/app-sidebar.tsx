@@ -36,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navMain = [
     { title: "Search", url: "#", icon: Search },
     { title: "Ask AI", url: "#", icon: Sparkles },
-    { title: "Dashboard", url: "#", icon: LayoutDashboard, badge: "10" },
+    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, badge: "10" },
     { title: "New Chat", url: "/", icon: Edit },
   ]
 
