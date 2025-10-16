@@ -1,7 +1,6 @@
 import supabase from "@/lib/supabase";
 import { create } from "zustand";
 import OpenAI from 'openai';
-
 // Initialize OpenAI client
 const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
@@ -24,6 +23,8 @@ export type Chat = {
     deleteChat: (chatId: string) => Promise<void>;
 };
 
+
+
 // Create the chat store using Zustand
 export const useChatStore = create<Chat>((set, get) => ({
 
@@ -42,62 +43,61 @@ export const useChatStore = create<Chat>((set, get) => ({
 
     // Function to add a chat to the database
     addChat: async (userChat) => {
-        const botChat = await useChatStore.getState().aiResponse(userChat);
-        const newEntry = { userChat: userChat, botResponse: botChat, created_at: new Date().toISOString() } as any;
+        const botChat = await get().aiResponse(userChat);
+        const newEntry = {
+            userChat,
+            botResponse: botChat,
+            created_at: new Date().toISOString()
+        };
+
         const convoId = get().currentConvoId;
 
+        // ✅ Update existing conversation
         if (convoId) {
-            // Load existing chats for this convo id, then append
-            const { data: existing, error: loadError } = await supabase
+            const { data: existing, error } = await supabase
                 .from('convo')
                 .select('id, chats')
                 .eq('id', convoId)
                 .single();
 
-            if (loadError) {
-                console.error('Error loading current convo:', loadError);
-                return;
+            if (error) {
+                console.error('Error loading convo:', error);
+                return null;
             }
 
-            const updatedChats = Array.isArray(existing?.chats)
-                ? [...existing.chats, newEntry]
-                : [newEntry];
+            const updatedChats = [...(existing?.chats || []), newEntry];
 
-            const { data: updated, error: updateError } = await supabase
+            const { error: updateError } = await supabase
                 .from('convo')
                 .update({ chats: updatedChats })
-                .eq('id', existing.id)
-                .select('id, chats')
-                .single();
+                .eq('id', convoId);
 
             if (updateError) {
                 console.error('Error updating convo:', updateError);
-            } else {
-                console.log('Chat appended:', updated);
+                return null;
             }
-            return;
+
+            return convoId; // ✅ return existing convo ID
         }
 
-        // No in-memory convo yet (fresh session): create new row and store its id
+        // ✅ Create new conversation
         const { data: inserted, error: insertError } = await supabase
             .from('convo')
             .insert([
-                {
-                    uid: user?.id || null,
-                    chats: [newEntry],
-                }
+                { uid: user?.id || null, chats: [newEntry] }
             ])
-            .select('id, chats')
+            .select('id')
             .single();
 
         if (insertError) {
-            console.error('Error creating new convo:', insertError);
-            return;
+            console.error('Error creating convo:', insertError);
+            return null;
         }
 
-        set({ currentConvoId: inserted.id as unknown as string });
-        console.log('Convo created:', inserted);
+        set({ currentConvoId: inserted.id });
+        return inserted.id; // ✅ return new convo ID
     },
+
 
     // Function to get chats from the database
     getChats: async () => {
