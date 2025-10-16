@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/services/Auth'
 import { AppSidebar } from '@/components/app-sidebar'
 import { NavActions } from '@/components/nav-actions'
+import Loading from '@/components/loading'
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -36,9 +37,7 @@ export default function ProtectedLayout({
     // You can show a loader while checking auth state
     if (loading || !user) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <p className="text-muted-foreground">Checking session...</p>
-            </div>
+            <Loading />
         )
     }
 
