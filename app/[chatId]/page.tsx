@@ -13,7 +13,6 @@ function Page() {
   const params = useParams();
   const routes = useRouter();
   const chatId = params.chatId as string;
-
   const [chat, setChat] = useState<any | null>(null);
   const [sending, setSending] = useState<null | "sending">(null);
   const [message, setMessage] = useState<string>("");

@@ -1,7 +1,5 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import { SignInForm } from "@/templates/SignIn"
-import { LogoTransparentBg } from "@/assets/images"
-import Image from "next/image"
 export default function LoginPage() {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">

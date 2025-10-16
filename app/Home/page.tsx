@@ -17,7 +17,6 @@ function page() {
         setLoading("sending");
 
         try {
-
             // Call addChat and get the new conversation ID if created
             const newChatId = await addChat(message);
 
