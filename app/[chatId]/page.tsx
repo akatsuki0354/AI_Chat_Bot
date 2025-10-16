@@ -1,18 +1,36 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import ProtectedLayout from "@/components/PretectedLayout";
+import { Input, Button } from "@/components/index";
+import { useChatStore } from "@/services/ChatsServices";
+import ReactMarkdown from "react-markdown";
+import { timeAgo } from "@/utils";
 import supabase from "@/lib/supabase";
-import * as React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 function Page() {
+  const { addChat, deleteChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
+  const routes = useRouter();
   const chatId = params.chatId as string;
 
-  const [chat, setChat] = React.useState<any | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [chat, setChat] = useState<any | null>(null);
+  const [sending, setSending] = useState<null | "sending">(null);
+  const [message, setMessage] = useState<string>("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  // Scroll to bottom of chat
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat]);
+
+  // Fetch chat
+  useEffect(() => {
+    if (!chatId) return;
+    setCurrentConvoId(chatId);
     const fetchChat = async () => {
       setLoading(true);
       const { data, error } = await supabase
@@ -20,49 +38,113 @@ function Page() {
         .select("*")
         .eq("id", chatId)
         .single();
-
       if (error) {
         console.error("Error fetching chat:", error);
+        setChat(null);
       } else {
         setChat(data);
-        console.log("Fetched chat:", data);
       }
       setLoading(false);
     };
+    fetchChat();
+  }, [chatId, setCurrentConvoId]);
 
-    if (chatId) fetchChat();
-  }, [chatId]);
+  // Send message
+  const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setSending("sending");
+    const localMessage = message;
+    setMessage("");
+    try {
+      await addChat(localMessage);
+      const { data } = await supabase
+        .from("convo")
+        .select("*")
+        .eq("id", chatId)
+        .single();
+      setChat(data);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setSending(null);
+    }
+  };
 
-  if (loading) {
-    return (
-      <ProtectedLayout>
-        <p>Loading chat...</p>
-      </ProtectedLayout>
-    );
-  }
-
-  if (!chat) {
-    return (
-      <ProtectedLayout>
-        <p>No chat found.</p>
-      </ProtectedLayout>
-    );
-  }
+  // Delete chat
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await deleteChat(id);
+      routes.push("/");
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <ProtectedLayout>
-      <h1>Chat ID: {chatId}</h1>
-
-      {chat.chats && Array.isArray(chat.chats) ? (
-        chat.chats.map((message: any, index: number) => (
-          <div key={index} className="p-2 border-b">
-            <p><strong>User:</strong> {message.userChat}</p>
-            <p><strong>Bot:</strong> {message.botResponse}</p>
+      <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
+        <div className="chats overflow-y-auto flex flex-end">
+          <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">
+            {loading && <p>Loading chat...</p>}
+            {!loading && !chat && <p>No chat found.</p>}
+            {!loading && chat && (
+              <div className="flex flex-col gap-4">
+                {(chat.chats || []).map((msg: any, idx: number) => (
+                  <div key={idx} className="flex flex-col gap-2">
+                    <div className="self-end bg-blue-100 p-4 rounded-lg shadow-md">
+                      <div className="mb-2">{msg.userChat}</div>
+                      <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div>
+                    </div>
+                    <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
+                      <div className="prose prose-sm">
+                        <ReactMarkdown>{msg.botResponse}</ReactMarkdown>
+                      </div>
+                      <div className="text-gray-400 text-xs text-right mt-2">
+                        {timeAgo(msg.created_at)}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2 text-red-500"
+                        onClick={() => handleDelete(chat.id)}
+                      >
+                        {deletingId === chat.id ? "Deleting..." : "Delete"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div ref={bottomRef} />
           </div>
-        ))
-      ) : (
-        <p>No messages found.</p>
-      )}
+        </div>
+
+        <form onSubmit={handleSend}>
+          <div className="mx-auto w-full max-w-3xl">
+            {sending === "sending" && (
+              <div className="flex ">
+                <div className="flex gap-5 text-gray-900 text-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mx-auto"></div>
+                  <p>thinking...</p>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Ask Anything.."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <Button>Send</Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </ProtectedLayout>
   );
 }
