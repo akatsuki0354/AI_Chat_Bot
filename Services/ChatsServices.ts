@@ -10,9 +10,7 @@ const openai = new OpenAI({
 });
 
 // Get the current authenticated user
-const {
-    data: { user },
-} = await supabase.auth.getUser();
+const { data: { user } } = await supabase.auth.getUser();
 
 // Define the Chat type
 export type AIResponse = {
