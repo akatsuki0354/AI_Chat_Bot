@@ -1,6 +1,6 @@
 "use client";
 import ProtectedLayout from "@/components/PretectedLayout"
-import { Input, Button } from "@/components/index"
+import { Textarea } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ function page() {
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<null | "sending">(null);
     const routes = useRouter();
-    
+
     // Function to handle sending a message
     const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -55,10 +55,12 @@ function page() {
                                 </div>
                             </div>
                         }
-                        <div className="flex gap-2">
-                            <Input type="text" placeholder="Ask Anything.." value={message} onChange={(e) => setMessage(e.target.value)} />
-                            <Button >Send</Button>
-                        </div>
+                        <Textarea
+                            placeholder="Ask Anything.."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="md:!text-lg md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
+                        />
                     </div>
                 </form>
             </div>

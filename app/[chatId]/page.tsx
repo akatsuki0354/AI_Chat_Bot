@@ -124,9 +124,9 @@ function Page() {
                 placeholder="Ask Anything.."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="!text-lg placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-transparent"
-                rows={1}
+                className="md:!text-lg md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
               />
+
 
 
             </div>
