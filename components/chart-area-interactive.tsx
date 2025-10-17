@@ -110,7 +110,7 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Usage Graph</CardTitle>
+        <CardTitle>Token Usage Graph</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
             Total for the last 3 months

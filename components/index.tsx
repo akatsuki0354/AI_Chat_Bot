@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Toggle } from "./ui/toggle";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Textarea } from "./ui/textarea";
 import Loading from "./loading";
 
 export {
@@ -31,5 +32,5 @@ export {
     NavFavorites, NavMain, TeamSwitcher, Skeleton, Sheet, DropdownMenu,
     Tooltip, Area, AreaChart, CartesianGrid, XAxis, ChartContainer, ChartTooltip, ChartTooltipContent, Toggle,
     Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle, SectionCards, ChartAreaInteractive, ProtectedLayout,
-    Badge, ToggleGroup, ToggleGroupItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+    Badge, ToggleGroup, ToggleGroupItem, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea
 };

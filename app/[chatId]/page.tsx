@@ -1,7 +1,7 @@
 "use client";
 
 import ProtectedLayout from "@/components/PretectedLayout";
-import { Input, Button } from "@/components/index";
+import { Textarea, Button } from "@/components/index";
 import { useChatStore } from "@/services/ChatsServices";
 import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
@@ -119,14 +119,16 @@ function Page() {
                 </div>
               </div>
             )}
-            <div className="flex gap-2">
-              <Input
-                type="text"
+            <div className="flex gap-2 mt-5">
+              <Textarea
                 placeholder="Ask Anything.."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                className="!text-lg placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-transparent"
+                rows={1}
               />
-              <Button>Send</Button>
+
+
             </div>
           </div>
         </form>
