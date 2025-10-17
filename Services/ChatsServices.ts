@@ -33,6 +33,7 @@ export type ChatStats = {
     totalTokens: number;
     promptTokens: number;
     completionTokens: number;
+    date: string;
 };
 
 export type Chat = {
@@ -175,6 +176,7 @@ export const useChatStore = create<Chat>((set, get) => ({
         let totalTokens = 0;
         let promptTokens = 0;
         let completionTokens = 0;
+        let date = "";
 
         chats.forEach(chat => {
             totalChats += chat.chats.length;
@@ -182,6 +184,7 @@ export const useChatStore = create<Chat>((set, get) => ({
                 promptTokens += message.botResponse.promptTokens;
                 completionTokens += message.botResponse.completionTokens;
                 totalTokens = promptTokens + completionTokens;
+                date = message.created_at;
             });
         });
 
@@ -189,7 +192,8 @@ export const useChatStore = create<Chat>((set, get) => ({
             totalChats,
             totalTokens,
             promptTokens,
-            completionTokens
+            completionTokens,
+            date
         };
     },
 

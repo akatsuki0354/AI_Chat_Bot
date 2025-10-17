@@ -19,7 +19,8 @@ export function SectionCards() {
     totalChats: 0,
     totalTokens: 0,
     promptTokens: 0,
-    completionTokens: 0
+    completionTokens: 0,
+    date: ""
   })
   const [loading, setLoading] = useState(true)
 
