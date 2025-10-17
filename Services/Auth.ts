@@ -93,7 +93,7 @@ export const syncUserToDatabase = async () => {
             .select();
 
         if (error) console.error("Error creating/updating user:", error);
-        else console.log("User inserted/updated:", data);
+
     } else {
         useAuth.setState({ user: null, loading: false });
     }
@@ -102,7 +102,6 @@ export const syncUserToDatabase = async () => {
 
 // Listen to auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
-    console.log(event, session)
     if (event === 'SIGNED_IN') {
         syncUserToDatabase().catch((err) => console.error('Sync failed', err))
     } else if (event === 'SIGNED_OUT') {

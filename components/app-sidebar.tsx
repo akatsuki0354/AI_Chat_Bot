@@ -1,6 +1,6 @@
 "use client"
 
-import React,{useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import {
   LayoutDashboard,
   Search,
@@ -25,8 +25,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useEffect(() => {
     const fetchChats = async () => {
       const data = await getChatsHistory()
-      if (data) setChats(data)
-        console.log("chats in sidebar: ", data);
+      if (data)
+        setChats(data)
     }
     fetchChats()
   }, [getChatsHistory])
@@ -44,8 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       chats: chats.map((chat: any) => ({
         id: chat.id,
-        title:
-          chat.chats?.[chat.chats.length - 1]?.userChat || "New Chat",
+        title: chat.chats?.[chat.chats.length - 1]?.userChat || "New Chat",
         url: `/${chat.id}`,
         timestamp: chat.created_at || "Recently",
         isActive: false,

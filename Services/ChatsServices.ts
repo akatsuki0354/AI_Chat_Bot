@@ -28,6 +28,13 @@ export type ChatMessage = {
     created_at: string;
 };
 
+export type ChatStats = {
+    totalChats: number;
+    totalTokens: number;
+    promptTokens: number;
+    completionTokens: number;
+};
+
 export type Chat = {
     currentConvoId: string | null;
     setCurrentConvoId: (id: string | null) => void;
@@ -36,6 +43,7 @@ export type Chat = {
     getChatById: (chatId: string) => Promise<{ id: string, chats: ChatMessage[] } | null>;
     getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
+    getChatStats: () => Promise<ChatStats>;
 };
 
 // Create the chat store using Zustand
@@ -157,6 +165,32 @@ export const useChatStore = create<Chat>((set, get) => ({
         } else {
             console.log("Chat deleted:", data);
         }
+    },
+
+    // Function to get chat statistics
+    getChatStats: async () => {
+        const chats = await get().getChatsHistory();
+
+        let totalChats = 0;
+        let totalTokens = 0;
+        let promptTokens = 0;
+        let completionTokens = 0;
+
+        chats.forEach(chat => {
+            totalChats += chat.chats.length;
+            chat.chats.forEach(message => {
+                promptTokens += message.botResponse.promptTokens;
+                completionTokens += message.botResponse.completionTokens;
+                totalTokens = promptTokens + completionTokens;
+            });
+        });
+
+        return {
+            totalChats,
+            totalTokens,
+            promptTokens,
+            completionTokens
+        };
     },
 
 }))
