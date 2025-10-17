@@ -59,19 +59,6 @@ function Page() {
     }
   };
 
-  // Delete chat
-  const handleDelete = async (id: string) => {
-    try {
-      setDeletingId(id);
-      await deleteChat(id);
-      routes.push("/");
-    } catch (error) {
-      console.error("Error deleting chat:", error);
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
   return (
     <ProtectedLayout>
       <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
@@ -92,14 +79,6 @@ function Page() {
                       <div className="text-gray-400 text-xs text-right mt-2">
                         {timeAgo(msg.created_at)}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="mt-2 text-red-500"
-                        onClick={() => handleDelete(chat.id)}
-                      >
-                        {deletingId === chat.id ? "Deleting..." : "Delete"}
-                      </Button>
                     </div>
                   </div>
                 ))}
@@ -123,12 +102,16 @@ function Page() {
               <Textarea
                 placeholder="Ask Anything.."
                 value={message}
+                rows={1}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }}
                 className="md:!text-lg md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
               />
-
-
-
             </div>
           </div>
         </form>

@@ -58,6 +58,12 @@ function page() {
                         <Textarea
                             placeholder="Ask Anything.."
                             value={message}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    e.currentTarget.form?.requestSubmit();
+                                }
+                            }}
                             onChange={(e) => setMessage(e.target.value)}
                             className="md:!text-lg md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
                         />
