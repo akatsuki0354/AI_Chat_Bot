@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import supabase from "@/lib/supabase";
 
+export type getUser = {
+    username: string,
+    avatar_url: string,
+    email: string,
+    uid: string
+}
 
 // Define the AuthState type
 export type AuthState = {
@@ -10,6 +16,7 @@ export type AuthState = {
     signOut: () => Promise<void>;
     signUpWithEmail: (email: string, username: string, password: string) => Promise<void>;
     signInWithEmail: (email: string, password: string) => Promise<void>;
+    getUserAuth: () => Promise<getUser | null>;
 };
 
 export const useAuth = create<AuthState>((set) => ({
@@ -65,6 +72,21 @@ export const useAuth = create<AuthState>((set) => ({
         }
         set({ loading: false });
     },
+
+    getUserAuth: async () => {
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError || !authData?.user) return null;
+
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('uid', authData.user.id)
+            .single();
+
+        if (error) return null;
+        return data as unknown as getUser;
+    },
+
 
 }));
 

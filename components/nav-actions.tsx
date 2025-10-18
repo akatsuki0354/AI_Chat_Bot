@@ -12,12 +12,10 @@ import {
   GalleryVerticalEnd,
   LineChart,
   Link,
-  MoreHorizontal,
   Settings2,
   Trash,
   Trash2,
 } from "lucide-react"
-
 import { Button } from '@/components/ui/button'
 import {
   Popover,
@@ -33,7 +31,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-
+import { useEffect, useState } from "react"
+import { useAuth } from "@/services/Auth"
+import Image from "next/image"
+import { getUser } from "@/services/Auth"
 const data = [
   [
     {
@@ -97,11 +98,21 @@ const data = [
   ],
 ]
 
-export function NavActions() {
-  const [isOpen, setIsOpen] = React.useState(false)
 
+export function NavActions() {
+  const { getUserAuth } = useAuth()
+  const [getData, setGetData] = useState<getUser | null>()
+  const [isOpen, setIsOpen] = React.useState(false)
   React.useEffect(() => {
     setIsOpen(false)
+  }, [])
+
+  useEffect(() => {
+    const userData = async () => {
+      const data = await getUserAuth()
+      setGetData(data)
+    }
+    userData()
   }, [])
 
   return (
@@ -113,7 +124,13 @@ export function NavActions() {
             size="icon"
             className="data-[state=open]:bg-accent h-7 w-7"
           >
-            <MoreHorizontal />
+
+            {getData?.avatar_url ? (
+              <div className="rounded-full overflow-hidden border">
+                <Image src={getData?.avatar_url} alt="" width={200} height={200} />
+              </div>
+            ) : <div></div>
+            }
           </Button>
         </PopoverTrigger>
         <PopoverContent

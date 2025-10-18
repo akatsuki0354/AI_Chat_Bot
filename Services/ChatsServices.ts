@@ -9,8 +9,7 @@ const openai = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-// Get the current authenticated user
-const { data: { user } } = await supabase.auth.getUser();
+// Note: Do NOT read the user at module scope; fetch it inside each function
 
 // Define the Chat type
 export type AIResponse = {
@@ -34,6 +33,13 @@ export type ChatStats = {
     date: string;
 };
 
+export type getUser = {
+    username: string,
+    avatar_url: string,
+    email: string,
+    uid: string
+}
+
 export type Chat = {
     currentConvoId: string | null;
     setCurrentConvoId: (id: string | null) => void;
@@ -43,6 +49,7 @@ export type Chat = {
     getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
     getChatStats: () => Promise<ChatStats>;
+    getUserAuth: () => Promise<getUser | null>;
 };
 
 // Create the chat store using Zustand
@@ -66,6 +73,20 @@ export const useChatStore = create<Chat>((set, get) => ({
         return { text, totalTokens, promptTokens, completionTokens };
     },
 
+    getUserAuth: async () => {
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError || !authData?.user) return null;
+
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('uid', authData.user.id)
+            .single();
+
+        if (error) return null;
+        return data as unknown as getUser;
+    },
+
     // Function to fetch a single chat by id
     getChatById: async (chatId) => {
         const { data, error } = await supabase
@@ -80,8 +101,28 @@ export const useChatStore = create<Chat>((set, get) => ({
         return data as { id: string, chats: ChatMessage[] };
     },
 
+    //Function to get chats History from the database
+    getChatsHistory: async () => {
+        const { data: authData } = await supabase.auth.getUser();
+        const authUserId = authData?.user?.id ?? null;
+        if (!authUserId) return [];
+
+        const { data: chats, error } = await supabase
+            .from('convo')
+            .select('id, chats')
+            .eq('uid', authUserId);
+        if (error) {
+            console.error('Error fetching chats:', error);
+            return [];
+        }
+        return (chats ?? []) as { id: string, chats: ChatMessage[] }[];
+    },
+
     // Function to add a chat to the database
     addChat: async (userChat) => {
+        const { data: authData } = await supabase.auth.getUser();
+        const authUserId = authData?.user?.id ?? null;
+
         const botChat = await get().aiResponse(userChat);
         const newEntry = {
             userChat,
@@ -123,7 +164,7 @@ export const useChatStore = create<Chat>((set, get) => ({
         const { data: inserted, error: insertError } = await supabase
             .from('convo')
             .insert([
-                { uid: user?.id || null, chats: [newEntry] }
+                { uid: authUserId, chats: [newEntry] }
             ])
             .select('id')
             .single();
@@ -138,19 +179,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     },
 
 
-    //Function to get chats History from the database
-    getChatsHistory: async () => {
-        let { data: chats, error } = await supabase
-            .from('convo')
-            .select('id, chats')
-            .eq("uid", user?.id || null)
-        if (error) {
-            console.error("Error fetching chats:", error);
-            return [];
-        }
-        // Ensure the output is typed and not null
-        return (chats ?? []) as { id: string, chats: ChatMessage[] }[];
-    },
+
 
     // Function to delete a chat from the database
     deleteChat: async (chatId) => {
