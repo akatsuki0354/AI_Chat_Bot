@@ -110,7 +110,7 @@ function Page() {
                     e.currentTarget.form?.requestSubmit();
                   }
                 }}
-                className="md:!text-lg md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
+                className="md:!text-[17px] md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
               />
             </div>
           </div>

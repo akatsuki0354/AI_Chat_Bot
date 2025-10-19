@@ -33,12 +33,7 @@ export type ChatStats = {
     date: string;
 };
 
-export type getUser = {
-    username: string,
-    avatar_url: string,
-    email: string,
-    uid: string
-}
+
 
 export type Chat = {
     currentConvoId: string | null;
@@ -49,7 +44,7 @@ export type Chat = {
     getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
     deleteChat: (chatId: string) => Promise<void>;
     getChatStats: () => Promise<ChatStats>;
-    getUserAuth: () => Promise<getUser | null>;
+
 };
 
 // Create the chat store using Zustand
@@ -73,20 +68,7 @@ export const useChatStore = create<Chat>((set, get) => ({
         return { text, totalTokens, promptTokens, completionTokens };
     },
 
-    getUserAuth: async () => {
-        const { data: authData, error: authError } = await supabase.auth.getUser();
-        if (authError || !authData?.user) return null;
-
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('uid', authData.user.id)
-            .single();
-
-        if (error) return null;
-        return data as unknown as getUser;
-    },
-
+   
     // Function to fetch a single chat by id
     getChatById: async (chatId) => {
         const { data, error } = await supabase
