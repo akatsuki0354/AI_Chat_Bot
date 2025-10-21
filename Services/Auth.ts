@@ -99,7 +99,7 @@ export const syncUserToDatabase = async () => {
         // Update Zustand store
         useAuth.setState({ user: userData.user, loading: false });
         // Insert or update user in Supabase
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from("users")
             .upsert(
                 [
@@ -114,7 +114,13 @@ export const syncUserToDatabase = async () => {
             )
             .select();
 
-        if (error) console.error("Error creating/updating user:", error);
+        if (userData) {
+            console.log("Data is inserted")
+        } else {
+            console.log("Error creating/updating user:", userData)
+
+        }
+
 
     } else {
         useAuth.setState({ user: null, loading: false });
