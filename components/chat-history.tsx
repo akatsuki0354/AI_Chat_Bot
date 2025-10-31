@@ -17,6 +17,7 @@ function ChatHistory({ groups }: { groups: any }) {
         setLocalGroups(groups);
     }, [groups]);
 
+    // Function to remove chat from local state
     const removeChatFromGroups = (chatId: string) => {
         setLocalGroups((prev: any) =>
             prev
@@ -25,6 +26,7 @@ function ChatHistory({ groups }: { groups: any }) {
         );
     };
 
+    // Set up real-time subscription to listen for deleted chats
     useEffect(() => {
         const channel = supabase
             .channel('convo-realtime')
@@ -38,6 +40,7 @@ function ChatHistory({ groups }: { groups: any }) {
         };
     }, []);
 
+    // Handle chat deletion
     const handleDeleteChat = async (chatId: string, e?: any) => {
         if (e) {
             e.preventDefault();

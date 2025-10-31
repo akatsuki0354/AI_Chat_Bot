@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 function page() {
     const { addChat } = useChatStore();
+    const {getChatsHistory} = useChatStore();
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<null | "sending">(null);
     const routes = useRouter();
