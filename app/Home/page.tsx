@@ -1,9 +1,10 @@
 "use client";
 import ProtectedLayout from "@/components/PretectedLayout"
-import { Textarea } from "@/components/index"
+import { Button, Textarea } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
 function page() {
     const { addChat } = useChatStore();
     const [message, setMessage] = useState<string>("");
@@ -47,44 +48,53 @@ function page() {
 
                 <form onSubmit={handleSend}>
                     <div className="mx-auto w-full max-w-3xl">
-                        {loading === "sending" &&
+                        {loading === "sending" && (
                             <div className="flex ">
                                 <div className="flex gap-5 text-gray-900 text-center">
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 mx-auto"></div>
                                     <p>thinking...</p>
                                 </div>
                             </div>
-                        }
-                        <Textarea
-                            placeholder="Ask Anything.."
-                            value={message}
-                            rows={1}
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
-                                    e.preventDefault();
-                                    e.currentTarget.form?.requestSubmit();
-                                }
-                            }}
-                            className="
-                         chats
-                           md:!text-[17px] 
-                           md:placeholder:text-lg 
-                           resize-none 
-                           overflow-hidden 
-                           border 
-                           border-gray-300 
-                           rounded-md 
-                           focus:!outline-none 
-                           focus:!ring-0 
-                           focus:!border-gray-300 
-                           leading-tight 
-                           pt-5
-                           max-h-[6rem]
-                           overflow-y-auto
-                           pr-24
-                         "
-                        />
+                        )}
+                        <div className="relative border-1 rounded-md shadow-sm">
+                            <Textarea
+                                placeholder="Ask any thing.."
+                                value={message}
+                                rows={1}
+                                onChange={(e) => setMessage(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" && !e.shiftKey) {
+                                        e.preventDefault();
+                                        e.currentTarget.form?.requestSubmit();
+                                    }
+                                }}
+                                className="
+                chats
+                md:!text-[17px] 
+                md:placeholder:text-lg 
+                resize-none 
+                overflow-hidden 
+                shadow-none
+                border-0
+                rounded-md 
+                focus:!outline-none 
+                focus:!ring-0 
+                focus:!border-0
+                leading-tight 
+                pt-5
+                max-h-[24rem]
+                overflow-y-auto
+                mb-3
+ "
+                            />
+                            <div className="mb-14">
+                                <Button
+                                    className=" absolute mr-2 right-0 mb-0 "
+                                >
+                                    <Send className="text-white" />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
