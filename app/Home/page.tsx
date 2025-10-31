@@ -2,15 +2,30 @@
 import ProtectedLayout from "@/components/PretectedLayout"
 import { Button, Textarea } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 function page() {
     const { addChat } = useChatStore();
-    const {getChatsHistory} = useChatStore();
+    const { getChatsHistory } = useChatStore();
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<null | "sending">(null);
+    const [chatsHistoryData, setChatsHistoryData] = useState<any[]>([]);
     const routes = useRouter();
+
+    const chatsHistory = async () => {
+        try {
+            const history = await getChatsHistory();
+            console.log("Chats History:", history);
+            setChatsHistoryData(history);
+        } catch (error) {
+            console.error("Error fetching chats history:", error);
+        }
+    };
+
+    useEffect(() => {
+        chatsHistory();
+    }, []);
 
     // Function to handle sending a message
     const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -41,10 +56,17 @@ function page() {
 
             <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
                 <div className="chats overflow-y-auto flex justify-center items-center h-full">
-                    <div className="">
-                        <h1 className="text-3xl text-center font-semibold">Welcome to Aurelius Chatbot</h1>
-                        <h1 className="text-2xl text-center">Ask Anything..</h1>
-                    </div>
+                    {chatsHistoryData.length === 0 ? (
+                        <div className="">
+                            <h1 className="text-3xl text-center font-semibold">Welcome to Aurelius Chatbot</h1>
+                            <h1 className="text-lg text-center">Ask Anything..</h1>
+                        </div>
+                    ) : (
+                        <div>
+                             <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
+                            <h1 className="text-lg text-center">Ask Anything..</h1>
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleSend}>
