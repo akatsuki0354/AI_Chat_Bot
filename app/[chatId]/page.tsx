@@ -66,7 +66,8 @@ function Page() {
             {!loading && chat && (
               <div className="flex flex-col gap-4">
                 {(chat.chats || []).map((msg: any, idx: number) => (
-                  <div key={idx} className="h-[calc(100vh-150px)]">
+
+                  <div key={idx} className={`${idx === chat.chats.length - 1 ? 'h-[calc(100vh-180px)]' : ''} `}>
                     <div className="text-4xl font-semibold">
                       <div className="mb-1">{msg.userChat}</div>
                       {/* <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div> */}

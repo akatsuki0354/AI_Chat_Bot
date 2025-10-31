@@ -18,6 +18,8 @@ export default function LoginPage() {
                 </div>
                 <div className="flex flex-1 items-center  justify-center">
                     <div className="w-full max-w-md p-10 border rounded-sm ">
+
+                        {/* Toggle between Sign In and Sign Up forms */}
                         {isSignUpPage ? (
                             <SignUpForm setIsSignUpPage={setIsSignUpPage} />
                         ) : (
