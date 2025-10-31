@@ -37,6 +37,7 @@ export type ChatStats = {
 
 export type Chat = {
     currentConvoId: string | null;
+    chats: string[];
     setCurrentConvoId: (id: string | null) => void;
     addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<AIResponse>;
@@ -49,11 +50,11 @@ export type Chat = {
 
 // Create the chat store using Zustand
 export const useChatStore = create<Chat>((set, get) => ({
-
+    
     // In-memory convo session id; resets on page refresh
     currentConvoId: null,
+    chats: [],
     setCurrentConvoId: (id) => set({ currentConvoId: id }),
-
     // Function to get AI response from OpenAI
     aiResponse: async (userChat) => {
         const response = await openai.chat.completions.create({
@@ -174,6 +175,7 @@ export const useChatStore = create<Chat>((set, get) => ({
             console.log(chatId);
         } else {
             console.log("Chat deleted:", data);
+             
         }
     },
 
@@ -205,6 +207,5 @@ export const useChatStore = create<Chat>((set, get) => ({
             date
         };
     },
-
 
 }))
