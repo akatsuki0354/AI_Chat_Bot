@@ -7,12 +7,13 @@ import {
 import { Ellipsis } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
-
-
+import { useRouter } from "next/navigation";
 function ChatHistory({ groups }: { groups: any }) {
     const { deleteChat } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
 
     useEffect(() => {
         setLocalGroups(groups);
@@ -33,13 +34,11 @@ function ChatHistory({ groups }: { groups: any }) {
             setLoading(false);
         }
     };
+
     // Handle chat deletion
-    const handleDeleteChat = async (chatId: string, e?: any) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+    const handleDeleteChat = async (chatId: string) => {
         removeChatFromGroups(chatId);
+        router.push(`/`);
         try {
             await deleteChat(chatId);
         } catch (error) {
@@ -55,7 +54,7 @@ function ChatHistory({ groups }: { groups: any }) {
             </h2>
             {localGroups.map((group: any) => (
                 <div key={group.title} >
-                    {group.chats.length === 0 && (<p className="px-4 py-2 text-sm text-center text-gray-500">No chats available.</p>)}
+                    {group.chats.length <= 0 && (<p className="px-4 py-2 text-sm text-center text-gray-500">No chats available.</p>)}
                     {loading && (
                         <div className="flex justify-center py-2">
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
@@ -76,7 +75,7 @@ function ChatHistory({ groups }: { groups: any }) {
                                         <Ellipsis size={16} />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-56" align="start">
-                                        <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>
+                                        <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
                                             Delete Chat
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
