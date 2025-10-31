@@ -1,17 +1,14 @@
 "use client";
-import LoginPage from "./SignIn/SignIn";
+
 import { useAuth } from "@/services/Auth";
-import Home from "./Home/page";
 import Loading from "@/components/loading";
+import Home from "./Home/page";
+import LoginPage from "./LogIn/LogIn";
 export default function Page() {
   const { user, loading } = useAuth();
-  if (typeof window !== "undefined" && loading) {
-    return <Loading />;
-  }
-  return (
-    <div>
-      {user ?
-        <Home /> : <LoginPage />}
-    </div>
-  )
+
+  if (loading) return <Loading />;
+  if (user) return <Home />;
+
+  return <LoginPage />;
 }

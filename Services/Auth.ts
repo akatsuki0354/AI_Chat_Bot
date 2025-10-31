@@ -50,7 +50,6 @@ export const useAuth = create<AuthState>((set) => ({
             email,
             password,
             options: { data: { full_name: username } },
-
         });
         if (error) {
             console.error("Sign up error:", error);
@@ -117,11 +116,8 @@ export const syncUserToDatabase = async () => {
         if (userData) {
             console.log("Data is inserted")
         } else {
-            console.log("Error creating/updating user:", userData)
-
+            console.log("Error creating/updating user:", error)
         }
-
-
     } else {
         useAuth.setState({ user: null, loading: false });
     }

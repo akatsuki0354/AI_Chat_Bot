@@ -13,10 +13,7 @@ import { useAuth } from '../services/Auth';
 import { useState } from 'react';
 import { Google } from "@/assets/images"
 import Image from "next/image";
-export function SignUpForm({
-    className,
-    ...props
-}: React.ComponentProps<"form">) {
+export default function SignUpForm({ setIsSignUpPage }: { setIsSignUpPage: (v: boolean) => void }) {
     const { signInWithGoogleLink, signUpWithEmail } = useAuth();
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -48,7 +45,7 @@ export function SignUpForm({
     };
 
     return (
-        <form onSubmit={handleSignWithEmail} className={cn("", className)} {...props}>
+        <form onSubmit={handleSignWithEmail}>
             <FieldGroup>
                 <div className="flex flex-col gap-1 ">
                     <h1 className="text-2xl font-bold">Create your account</h1>
@@ -85,8 +82,11 @@ export function SignUpForm({
                     </Button>
                     <FieldDescription className="text-center">
                         Don&apos;t have an account?{" "}
-                        <a href="/" className="underline underline-offset-4">
-                            SignIn
+                        <a
+                            onClick={() => setIsSignUpPage(false)}
+                            className="underline underline-offset-4 cursor-pointer"
+                        >
+                            Sign In
                         </a>
                     </FieldDescription>
                 </Field>

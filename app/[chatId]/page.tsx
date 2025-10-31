@@ -9,14 +9,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 function Page() {
-  const { addChat, deleteChat, setCurrentConvoId } = useChatStore();
+  const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
   const routes = useRouter();
   const chatId = params.chatId as string;
   const [chat, setChat] = useState<any | null>(null);
   const [sending, setSending] = useState<null | "sending">(null);
   const [message, setMessage] = useState<string>("");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -67,13 +66,16 @@ function Page() {
             {!loading && chat && (
               <div className="flex flex-col gap-4">
                 {(chat.chats || []).map((msg: any, idx: number) => (
-                  <div key={idx} className="flex flex-col gap-2">
-                    <div className="self-end bg-blue-100 p-4 rounded-lg shadow-md">
-                      <div className="mb-2">{msg.userChat}</div>
-                      <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div>
+                  <div key={idx} className="h-[calc(100vh-150px)]">
+                    <div className="text-4xl font-semibold">
+                      <div className="mb-1">{msg.userChat}</div>
+                      {/* <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div> */}
                     </div>
-                    <div className="self-start bg-gray-100 p-4 rounded-2xl shadow-md leading-relaxed text-gray-800">
-                      <div className="prose prose-sm">
+                    <div className=" font-semibold mb-5 cursor-pointer border-b-1">
+                      <h1 className="py-2 w-fit border-black border-b-2">Answer</h1>
+                    </div>
+                    <div className="">
+                      <div className="prose prose-sm ">
                         <ReactMarkdown>{msg.botResponse?.text ?? ""}</ReactMarkdown>
                       </div>
                       <div className="text-gray-400 text-xs text-right mt-2">
@@ -110,8 +112,26 @@ function Page() {
                     e.currentTarget.form?.requestSubmit();
                   }
                 }}
-                className="md:!text-[17px] md:placeholder:text-lg resize-none overflow-y-auto max-h-[7.5em] leading-relaxed border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-300"
+                className="
+  chats
+    md:!text-[17px] 
+    md:placeholder:text-lg 
+    resize-none 
+    overflow-hidden 
+    border 
+    border-gray-300 
+    rounded-md 
+    focus:!outline-none 
+    focus:!ring-0 
+    focus:!border-gray-300 
+    leading-tight 
+    pt-5
+    max-h-[6rem]
+    overflow-y-auto
+    pr-24
+  "
               />
+
             </div>
           </div>
         </form>
