@@ -58,6 +58,7 @@ function ChatHistory({ groups }: { groups: any }) {
             </h2>
             {localGroups.map((group: any) => (
                 <div key={group.title} >
+                    {group.chats.length === 0 && (<p className="px-4 py-2 text-sm text-center text-gray-500">No chats available.</p>)}
                     <div>
                         {group.chats.map((chat: any) => (
                             <a
