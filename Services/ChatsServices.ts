@@ -9,8 +9,6 @@ const openai = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-// Note: Do NOT read the user at module scope; fetch it inside each function
-
 // Define the Chat type
 export type AIResponse = {
     text: string;
@@ -160,9 +158,6 @@ export const useChatStore = create<Chat>((set, get) => ({
         set({ currentConvoId: inserted.id });
         return inserted.id;
     },
-
-
-
 
     // Function to delete a chat from the database
     deleteChat: async (chatId) => {
