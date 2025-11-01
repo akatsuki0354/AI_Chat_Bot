@@ -4,15 +4,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Ellipsis } from 'lucide-react';
+import { Edit, Ellipsis } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-
+import { Input } from "./ui/input";
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     const { deleteChat } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups ?? []);
+    const [editingChatId, setEditingChatId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -75,6 +76,10 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     // Empty = there are chats but all of them are archived
     const isEmpty = totalChats > 0 && activeChatsCount === 0;
 
+    const handleEdit = (chatId: string) => {
+        setEditingChatId(chatId);
+    };
+
     return (
         <div className="mb-4">
             <h2 className="px-4 py-2 text-sm font-semibold text-muted-foreground">
@@ -98,25 +103,33 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                     {group.archived !== true && (
                                         <div>
                                             {chat.archived !== true && (
-                                                <a
+                                                <div
                                                     key={chat.id}
-                                                    href={chat.url} className='flex hover:bg-accent justify-between items-center py-2 px-4'>
-                                                    <div className=' cursor-pointer rounded-md mb-1 flex-1 min-w-0'>
-                                                        <h1 className='text-sm line-clamp-1'>
-                                                            {chat.title}
-                                                        </h1>
-                                                    </div>
+                                                    className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 justify-between items-center py-2 px-4`}
+                                                >
+                                                    {editingChatId == chat.id ? (
+                                                        <form>
+                                                            <input className="border-none shadow-none p-0 outline-0 focus:ring-0 focus:border-0" value={chat.title} />
+                                                        </form>
+                                                    ) : (
+                                                        <a href={chat.url} className="flex-1 min-w-0">
+                                                            <h1 className="text-sm line-clamp-1 group">{chat.title}</h1>
+                                                        </a>
+                                                    )}
+
+
                                                     <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Ellipsis size={16} className="shrink-0" />
+                                                        <DropdownMenuTrigger asChild className="bg-red cursor-pointer">
+                                                            <Ellipsis size={16} className="shrink-0 " />
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent className="w-fit" align="start">
-                                                            <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>
-                                                                Delete
-                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>Delete</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleEdit(chat.id)}>Edit</DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
-                                                </a>
+
+                                                </div>
+
                                             )
                                             }
                                         </div>
@@ -126,8 +139,9 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                         </div>
                     </div>
                 ))
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }
 
