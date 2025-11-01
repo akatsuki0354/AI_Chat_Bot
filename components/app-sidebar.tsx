@@ -20,13 +20,16 @@ import {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { getChatsHistory } = useChatStore()
   const [chats, setChats] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
 
   // Fetch chats when component mounts
   useEffect(() => {
     const fetchChats = async () => {
+      setLoading(true)
       const data = await getChatsHistory()
       if (data)
         setChats(data)
+      setLoading(false)
     }
     fetchChats()
   }, [getChatsHistory])
@@ -58,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navMain} />
       </SidebarHeader>
       <SidebarContent>
-        <ChatHistory groups={chatGroups} />
+        <ChatHistory groups={chatGroups} loading={loading} />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
