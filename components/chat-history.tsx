@@ -8,10 +8,12 @@ import { Ellipsis } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
 import supabase from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     const { deleteChat } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups ?? []);
+    const router = useRouter();
 
     useEffect(() => {
         setLocalGroups(groups ?? []);
@@ -49,6 +51,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         removeChatFromGroups(chatId);
         try {
             await deleteChat(chatId);
+            router.push("/");
         } catch (error) {
             console.error("Error deleting chat:", error);
         }
@@ -75,25 +78,34 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                     <div key={group.title ?? idx} >
                         <div>
                             {group.chats.map((chat: any) => (
-                                <a
-                                    key={chat.id}
-                                    href={chat.url} className='flex hover:bg-accent justify-between items-center py-2 px-4'>
-                                    <div className=' cursor-pointer rounded-md mb-1 flex-1 min-w-0'>
-                                        <h1 className='text-sm line-clamp-1'>
-                                            {chat.title}
-                                        </h1>
-                                    </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Ellipsis size={16} className="shrink-0" />
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-fit" align="start">
-                                            <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </a>
+                                <div>
+                                    {group.archived !== true && (
+                                        <div>
+                                            {chat.archived !== true && (
+                                                <a
+                                                    key={chat.id}
+                                                    href={chat.url} className='flex hover:bg-accent justify-between items-center py-2 px-4'>
+                                                    <div className=' cursor-pointer rounded-md mb-1 flex-1 min-w-0'>
+                                                        <h1 className='text-sm line-clamp-1'>
+                                                            {chat.title}
+                                                        </h1>
+                                                    </div>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Ellipsis size={16} className="shrink-0" />
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent className="w-fit" align="start">
+                                                            <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </a>
+                                            )
+                                            }
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     </div>

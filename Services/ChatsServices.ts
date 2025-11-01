@@ -42,15 +42,15 @@ export type Chat = {
     addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<AIResponse>;
     getChatById: (chatId: string) => Promise<{ id: string, chats: ChatMessage[] } | null>;
-    getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[] }[]>;
-    deleteChat: (chatId: string) => Promise<void>;
+    getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[], archived: boolean }[]>;
+    deleteChat: (chatId: string, archived?: boolean) => Promise<void>;
     getChatStats: () => Promise<ChatStats>;
 
 };
 
 // Create the chat store using Zustand
 export const useChatStore = create<Chat>((set, get) => ({
-    
+
     // In-memory convo session id; resets on page refresh
     currentConvoId: null,
     chats: [],
@@ -69,9 +69,9 @@ export const useChatStore = create<Chat>((set, get) => ({
         return { text, totalTokens, promptTokens, completionTokens };
     },
 
-     
 
-   
+
+
     // Function to fetch a single chat by id
     getChatById: async (chatId) => {
         const { data, error } = await supabase
@@ -94,13 +94,13 @@ export const useChatStore = create<Chat>((set, get) => ({
 
         const { data: chats, error } = await supabase
             .from('convo')
-            .select('id, chats')
+            .select('id, chats, archived')
             .eq('uid', authUserId);
         if (error) {
             console.error('Error fetching chats:', error);
             return [];
         }
-        return (chats ?? []) as { id: string, chats: ChatMessage[] }[];
+        return (chats ?? []) as { id: string, chats: ChatMessage[], archived: boolean }[];
     },
 
     // Function to add a chat to the database
@@ -167,14 +167,16 @@ export const useChatStore = create<Chat>((set, get) => ({
     deleteChat: async (chatId) => {
         const { data, error } = await supabase
             .from('convo')
-            .delete()
-            .eq("id", chatId)
+            .update({ archived: true })
+            .eq('id', chatId)
+            .select()
+            .single();
         if (error) {
             console.error("Error deleting chat:", error);
             console.log(chatId);
         } else {
             console.log("Chat deleted:", data);
-             
+
         }
     },
 

@@ -50,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: chat.chats?.[chat.chats.length - 1]?.userChat || "New Chat",
         url: `/${chat.id}`,
         timestamp: chat.created_at || "Recently",
-        isActive: false,
+        archived: chat.archived,
       })),
     },
   ]
