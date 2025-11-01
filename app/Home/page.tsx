@@ -56,8 +56,8 @@ function page() {
     return (
         <ProtectedLayout>
 
-            <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
-                <div className="chats overflow-y-auto flex justify-center items-center h-full">
+            <div className="flex flex-col gap-14 h-[calc(100vh-56px)] px-4 py-4 justify-center">
+                <div >
                     {loading === "loadingHistory" ? (
                         <div>
                             <Loading />
@@ -65,12 +65,10 @@ function page() {
                     ) : chatsHistoryData.length === 0 ? (
                         <div className="">
                             <h1 className="text-3xl text-center font-semibold">Welcome to Aurelius Chatbot</h1>
-                            <h1 className="text-lg text-center">Ask Anything..</h1>
                         </div>
                     ) : (
                         <div>
                             <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
-                            <h1 className="text-lg text-center">Ask Anything..</h1>
                         </div>
                     )}
                 </div>
