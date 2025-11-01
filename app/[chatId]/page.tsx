@@ -8,6 +8,7 @@ import MarkdownRenderer from "@/components/markdown-renderer";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Send, Plus } from "lucide-react";
+import { MessageHeader } from "@/components/message-header";
 function Page() {
   const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
@@ -62,6 +63,8 @@ function Page() {
     }
   };
 
+  
+
   return (
     <ProtectedLayout>
       <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
@@ -70,12 +73,8 @@ function Page() {
             {!loading && chat && (
               <div className="flex flex-col gap-4">
                 {(chat.chats || []).map((msg: any, idx: number) => (
-
                   <div key={idx} className={`${idx === chat.chats.length - 1 ? 'h-[calc(100vh-200px)]' : ''} `}>
-                    <div className="text-4xl font-semibold">
-                      <div className="mb-1">{msg.userChat}</div>
-                      {/* <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div> */}
-                    </div>
+                    <MessageHeader text={msg.userChat} createdAt={msg.created_at} />
                     <div className=" font-semibold mb-5 border-b-1">
                       <h1 className="py-2 w-fit border-black border-b-2">Answer</h1>
                     </div>
