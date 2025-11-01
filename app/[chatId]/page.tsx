@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Send } from "lucide-react";
+import { Send, Plus } from "lucide-react";
 function Page() {
   const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
@@ -62,12 +62,12 @@ function Page() {
     <ProtectedLayout>
       <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
         <div className="chats overflow-y-auto flex flex-end">
-          <div className="mx-auto w-full max-w-3xl h-[calc(100vh-150px)] flex flex-col gap-4">
+          <div className="mx-auto w-full max-w-3xl h-[calc(100vh-200px)] flex flex-col gap-4">
             {!loading && chat && (
               <div className="flex flex-col gap-4">
                 {(chat.chats || []).map((msg: any, idx: number) => (
 
-                  <div key={idx} className={`${idx === chat.chats.length - 1 ? 'h-[calc(100vh-180px)]' : ''} `}>
+                  <div key={idx} className={`${idx === chat.chats.length - 1 ? 'h-[calc(100vh-200px)]' : ''} `}>
                     <div className="text-4xl font-semibold">
                       <div className="mb-1">{msg.userChat}</div>
                       {/* <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div> */}
@@ -103,7 +103,7 @@ function Page() {
             )}
             <div className="relative border-1 rounded-md shadow-sm">
               <Textarea
-                placeholder="Ask Another Question.."
+                placeholder="Ask any thing.."
                 value={message}
                 rows={1}
                 onChange={(e) => setMessage(e.target.value)}
@@ -114,28 +114,28 @@ function Page() {
                   }
                 }}
                 className="
-                chats
-                md:!text-[17px] 
-                md:placeholder:text-lg 
-                resize-none 
-                overflow-hidden 
-                shadow-none
-                border-0
-                rounded-md 
-                focus:!outline-none 
-                focus:!ring-0 
-                focus:!border-0
-                leading-tight 
-                pt-5
-                max-h-[24rem]
-                overflow-y-auto
-                mb-3
- "
+                                            chats
+                                            md:!text-[17px] 
+                                            md:placeholder:text-lg 
+                                            resize-none 
+                                            overflow-hidden 
+                                            shadow-none
+                                            min-h-0
+                                            border-0
+                                            rounded-md 
+                                            focus:!outline-none 
+                                            focus:!ring-0 
+                                            focus:!border-0
+                                            leading-tight 
+                                            max-h-[24rem]
+                                            overflow-y-auto
+                                            "
               />
-              <div className="mb-14">
-                <Button
-                  className=" absolute mr-2 right-0 mb-0 "
-                >
+              <div className="py-1 flex justify-between px-2">
+                <Button className="bg-transparent hover:bg-gray-600/10 rounded-full w-10 h-10">
+                  <Plus className="text-gray-500" />
+                </Button>
+                <Button >
                   <Send className="text-white" />
                 </Button>
               </div>
