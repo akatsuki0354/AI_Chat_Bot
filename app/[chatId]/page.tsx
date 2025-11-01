@@ -1,14 +1,13 @@
 "use client";
 
 import ProtectedLayout from "@/components/PretectedLayout";
-import { Textarea, Button } from "@/components/index";
 import { useChatStore } from "@/services/ChatsServices";
 import { timeAgo } from "@/utils";
 import MarkdownRenderer from "@/components/markdown-renderer";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Send, Plus } from "lucide-react";
 import { MessageHeader } from "@/components/message-header";
+import ChatComposer from "@/components/chat-composer";
 function Page() {
   const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
@@ -102,45 +101,10 @@ function Page() {
                 </div>
               </div>
             )}
-            <div className="relative border-1 rounded-md shadow-sm">
-              <Textarea
-                placeholder="Ask any thing.."
-                value={message}
-                rows={1}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    e.currentTarget.form?.requestSubmit();
-                  }
-                }}
-                className="
-                                            chats
-                                            md:!text-[17px] 
-                                            md:placeholder:text-lg 
-                                            resize-none 
-                                            overflow-hidden 
-                                            shadow-none
-                                            min-h-0
-                                            border-0
-                                            rounded-md 
-                                            focus:!outline-none 
-                                            focus:!ring-0 
-                                            focus:!border-0
-                                            leading-tight 
-                                            max-h-[24rem]
-                                            overflow-y-auto
-                                            "
-              />
-              <div className="py-1 flex justify-between px-2">
-                <Button className="bg-transparent hover:bg-gray-600/10 rounded-full w-10 h-10">
-                  <Plus className="text-gray-500" />
-                </Button>
-                <Button >
-                  <Send className="text-white" />
-                </Button>
-              </div>
-            </div>
+            <ChatComposer
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
         </form>
       </div>
