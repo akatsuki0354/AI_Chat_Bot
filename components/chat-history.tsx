@@ -9,30 +9,34 @@ import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 function ChatHistory({ groups }: { groups: any }) {
+
     const { deleteChat } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-
+    // Sync local groups with prop changes
     useEffect(() => {
-        setLocalGroups(groups);
+        const fetchGroups = async () => {
+            setLoading(true);
+            try {
+                setLocalGroups(groups);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchGroups();
     }, [groups]);
 
     // Function to remove chat from local state
     const removeChatFromGroups = async (chatId: string) => {
-        setLoading(true);
-        try {
-            setLocalGroups((prev: any) =>
-                prev
-                    .map((g: any) => ({ ...g, chats: g.chats.filter((c: any) => c.id !== chatId) }))
-                    .filter((g: any) => g.chats.length > 0)
-            );
-        } catch (error) {
-            console.error("Error removing chat from groups:", error);
-        } finally {
-            setLoading(false);
-        }
+        setLocalGroups((prev: any) =>
+            prev
+                .map((g: any) => ({ ...g, chats: g.chats.filter((c: any) => c.id !== chatId) }))
+                .filter((g: any) => g.chats.length > 0)
+        );
     };
 
     // Handle chat deletion
@@ -52,40 +56,46 @@ function ChatHistory({ groups }: { groups: any }) {
             <h2 className="px-4 py-2 text-sm font-semibold text-muted-foreground">
                 Chat History
             </h2>
-            {localGroups.map((group: any) => (
-                <div key={group.title} >
-                    {group.chats.length <= 0 && (<p className="px-4 py-2 text-sm text-center text-gray-500">No chats available.</p>)}
-                    {loading && (
-                        <div className="flex justify-center py-2">
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
-                        </div>
-                    )}
-                    <div>
-                        {group.chats.map((chat: any) => (
-                            <a
-                                key={chat.id}
-                                href={chat.url} className='flex justify-between items-center py-2 px-4'>
-                                <div className='hover:bg-accent cursor-pointer rounded-md mb-1'>
-                                    <h1 className='text-sm line-clamp-1'>
-                                        {chat.title}
-                                    </h1>
-                                </div>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Ellipsis size={16} />
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56" align="start">
-                                        <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
-                                            Delete Chat
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </a>
-                        ))}
-                    </div>
-                </div>
+            {loading && (
+                <p className="px-4 py-2 text-sm text-center text-gray-500">Loading...</p>
+            )}
+            {localGroups.length <= 0 ? (
+                <p className="px-4 py-2 text-sm text-center text-gray-500">No chats available.</p>
+            ) : (
+                <div>
+                    {localGroups.map((group: any) => (
+                        <div key={group.title} >
 
-            ))}
+
+                            <div>
+                                {group.chats.map((chat: any) => (
+                                    <a
+                                        key={chat.id}
+                                        href={chat.url} className='flex justify-between items-center py-2 px-4'>
+                                        <div className='hover:bg-accent cursor-pointer rounded-md mb-1'>
+                                            <h1 className='text-sm line-clamp-1'>
+                                                {chat.title}
+                                            </h1>
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Ellipsis size={16} />
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-56" align="start">
+                                                <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+
         </div>
     )
 }

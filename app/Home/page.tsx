@@ -4,7 +4,7 @@ import { Button, Textarea } from "@/components/index"
 import { useChatStore } from "@/services/ChatsServices"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 function page() {
     const { addChat } = useChatStore();
     const { getChatsHistory } = useChatStore();
@@ -63,7 +63,7 @@ function page() {
                         </div>
                     ) : (
                         <div>
-                             <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
+                            <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
                             <h1 className="text-lg text-center">Ask Anything..</h1>
                         </div>
                     )}
@@ -92,28 +92,28 @@ function page() {
                                     }
                                 }}
                                 className="
-                chats
-                md:!text-[17px] 
-                md:placeholder:text-lg 
-                resize-none 
-                overflow-hidden 
-                shadow-none
-                border-0
-                rounded-md 
-                focus:!outline-none 
-                focus:!ring-0 
-                focus:!border-0
-                leading-tight 
-                pt-5
-                max-h-[24rem]
-                overflow-y-auto
-                mb-3
- "
+                                            chats
+                                            md:!text-[17px] 
+                                            md:placeholder:text-lg 
+                                            resize-none 
+                                            overflow-hidden 
+                                            shadow-none
+                                            min-h-0
+                                            border-0
+                                            rounded-md 
+                                            focus:!outline-none 
+                                            focus:!ring-0 
+                                            focus:!border-0
+                                            leading-tight 
+                                            max-h-[24rem]
+                                            overflow-y-auto
+                                            "
                             />
-                            <div className="mb-14">
-                                <Button
-                                    className=" absolute mr-2 right-0 mb-0 "
-                                >
+                            <div className="py-1 flex justify-between px-2">
+                                <Button className="bg-transparent hover:bg-gray-600/10 rounded-full w-10 h-10">
+                                    <Plus className="text-gray-500" />
+                                </Button>
+                                <Button >
                                     <Send className="text-white" />
                                 </Button>
                             </div>
