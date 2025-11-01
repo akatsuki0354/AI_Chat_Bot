@@ -1,7 +1,7 @@
 "use client";
 import ProtectedLayout from "@/components/PretectedLayout"
 import { useChatStore } from "@/services/ChatsServices"
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import ChatComposer from "@/components/chat-composer";
 import Loading from "@/components/loading";
@@ -31,7 +31,7 @@ function page() {
     }, []);
 
     // Function to handle sending a message
-    const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSend = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message.trim()) return;
         setMessage("");

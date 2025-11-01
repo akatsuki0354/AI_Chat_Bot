@@ -45,6 +45,7 @@ export type Chat = {
     getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[], archived: boolean }[]>;
     deleteChat: (chatId: string, archived?: boolean) => Promise<void>;
     getChatStats: () => Promise<ChatStats>;
+    updateChatTitle: (chatId: string, newTitle: string) => Promise<void>;
 
 };
 
@@ -86,6 +87,19 @@ export const useChatStore = create<Chat>((set, get) => ({
         return data as { id: string, chats: ChatMessage[] };
     },
 
+    // Function to update chat title
+    updateChatTitle: async (chatId, newTitle) => {
+        const { data, error } = await supabase
+            .from('convo')
+            .update({ title: newTitle })
+            .eq('id', chatId);
+        if (error) {
+            console.error('Error updating chat title:', error);
+        } else {
+            console.log('Chat title updated:', data);
+        }
+    },
+
     //Function to get chats History from the database
     getChatsHistory: async () => {
         const { data: authData } = await supabase.auth.getUser();
@@ -94,8 +108,8 @@ export const useChatStore = create<Chat>((set, get) => ({
 
         const { data: chats, error } = await supabase
             .from('convo')
-            .select('id, chats, archived')
-            .eq('uid', authUserId);
+            .select('id, chats, archived, title')
+            .eq('uid', authUserId)
         if (error) {
             console.error('Error fetching chats:', error);
             return [];

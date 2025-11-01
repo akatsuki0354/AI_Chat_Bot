@@ -2,18 +2,20 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Edit, Ellipsis } from 'lucide-react';
+import { Edit, Ellipsis, Trash } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
-    const { deleteChat } = useChatStore();
+    const { deleteChat, updateChatTitle } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups ?? []);
     const [editingChatId, setEditingChatId] = useState<string | null>(null);
+    const [editingChatTitle, setEditingChatTitle] = useState<string>('');
     const router = useRouter();
 
     useEffect(() => {
@@ -29,14 +31,49 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         );
     };
 
+    // Function to update a chat inside the groups
+    const updateChatInGroups = (chatId: string, patch: any) => {
+        setLocalGroups((prev: any) =>
+            prev.map((group: any) => ({
+                ...group,
+                chats: group.chats.map((chat: any) =>
+                    chat.id === chatId ? { ...chat, ...patch } : chat
+                ),
+            }))
+        );
+    };
+
     // Function to handle real-time updates
     useEffect(() => {
         const channel = supabase
             .channel('convo-realtime')
-            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'convo' }, (payload: any) => {
-                const deletedId = payload?.old?.id as string;
-                if (deletedId) removeChatFromGroups(deletedId);
-            })
+            // Handle hard deletes
+            .on(
+                'postgres_changes',
+                { event: 'DELETE', schema: 'public', table: 'convo' },
+                (payload: any) => {
+                    const deletedId = payload?.old?.id as string;
+                    if (deletedId) removeChatFromGroups(deletedId);
+                }
+            )
+            // Handle soft deletes (archived flag set to true)
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'convo' },
+                (payload: any) => {
+                    const updated = payload?.new as any;
+                    const archivedVal = updated?.archived;
+                    const becameArchived = Boolean(
+                        archivedVal === true || archivedVal === 'true' || archivedVal === 1
+                    );
+                    if (becameArchived && updated?.id) {
+                        removeChatFromGroups(updated.id as string);
+                    } else if (updated?.id) {
+                        // Realtime title update
+                        updateChatInGroups(updated.id as string, { title: updated.title });
+                    }
+                }
+            )
             .subscribe();
         return () => {
             supabase.removeChannel(channel);
@@ -45,10 +82,6 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
 
     // Function to handle delete chat
     const handleDeleteChat = async (chatId: string, e?: any) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
         removeChatFromGroups(chatId);
         try {
             await deleteChat(chatId);
@@ -76,8 +109,21 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     // Empty = there are chats but all of them are archived
     const isEmpty = totalChats > 0 && activeChatsCount === 0;
 
-    const handleEdit = (chatId: string) => {
+    const handleEdit = async (chatId: string, Title: string) => {
         setEditingChatId(chatId);
+        setEditingChatTitle(Title);
+    };
+    const EditSubmit = async (e: React.FormEvent, chatId: string, newTitle: string) => {
+        e.preventDefault();
+        try {
+            // Optimistic update
+            updateChatInGroups(chatId, { title: newTitle });
+            await updateChatTitle(chatId, newTitle);
+            setEditingChatId(null);
+            setEditingChatTitle('');
+        } catch (error) {
+            console.error("Error updating chat title:", error);
+        }
     };
 
     return (
@@ -97,43 +143,64 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
             ) : (
                 localGroups.map((group: any, idx: number) => (
                     <div key={group.title ?? idx} >
-                        <div>
+                        <div >
                             {group.chats.map((chat: any) => (
-                                <div>
-                                    {group.archived !== true && (
-                                        <div>
-                                            {chat.archived !== true && (
-                                                <div
-                                                    key={chat.id}
-                                                    className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 justify-between items-center py-2 px-4`}
-                                                >
-                                                    {editingChatId == chat.id ? (
-                                                        <form>
-                                                            <input className="border-none shadow-none p-0 outline-0 focus:ring-0 focus:border-0" value={chat.title} />
-                                                        </form>
-                                                    ) : (
-                                                        <a href={chat.url} className="flex-1 min-w-0">
-                                                            <h1 className="text-sm line-clamp-1 group">{chat.title}</h1>
-                                                        </a>
-                                                    )}
+                                <div key={chat.id}>
+                                    {!isArchived(chat.archived) && (
+                                        <div
+                                            className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 justify-between items-center py-2 px-4`}>
+                                            {editingChatId == chat.id ? (
+                                                <form onSubmit={(e) => EditSubmit(e, chat.id, editingChatTitle || '')} className="flex-1 min-w-0">
+                                                    <Input
+                                                        className="
+    border-0 
+    shadow-none 
+    outline-none 
+    focus:outline-none 
+    focus:ring-0 
+    focus-visible:ring-0 
+    focus-visible:ring-offset-0 
+    ring-0 
+    ring-offset-0 
+    focus:border-transparent 
+    border-transparent 
+    bg-transparent 
+    p-0
+    m-0
+    appearance-none
+  "
+                                                        value={editingChatTitle}
+                                                        onChange={(e) => setEditingChatTitle(e.currentTarget.value)}
+                                                    />
 
 
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild className="bg-red cursor-pointer">
-                                                            <Ellipsis size={16} className="shrink-0 " />
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent className="w-fit" align="start">
-                                                            <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>Delete</DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => handleEdit(chat.id)}>Edit</DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                </form>
+                                            ) : (
+                                                <a href={chat.url} className="flex-1 min-w-0">
+                                                    <h1 className="text-sm line-clamp-1 group">{chat.title}</h1>
+                                                </a>
+                                            )}
 
-                                                </div>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild className="bg-red cursor-pointer">
+                                                    <Ellipsis size={16} className="shrink-0 " />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-fit" align="start">
+                                                    <DropdownMenuItem  onClick={() => handleEdit(chat.id, chat.title)}>
+                                                        <Edit size={16} />
+                                                        Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem  onClick={() => handleDeleteChat(chat.id)}>
+                                                        <Trash size={16} />
+                                                        Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
 
-                                            )
-                                            }
                                         </div>
-                                    )}
+
+                                    )
+                                    }
                                 </div>
                             ))}
                         </div>
