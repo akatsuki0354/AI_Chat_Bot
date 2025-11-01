@@ -69,6 +69,8 @@ export const useChatStore = create<Chat>((set, get) => ({
         return { text, totalTokens, promptTokens, completionTokens };
     },
 
+     
+
    
     // Function to fetch a single chat by id
     getChatById: async (chatId) => {

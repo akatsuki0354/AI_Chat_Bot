@@ -3,8 +3,8 @@
 import ProtectedLayout from "@/components/PretectedLayout";
 import { Textarea, Button } from "@/components/index";
 import { useChatStore } from "@/services/ChatsServices";
-import ReactMarkdown from "react-markdown";
 import { timeAgo } from "@/utils";
+import MarkdownRenderer from "@/components/markdown-renderer";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Send, Plus } from "lucide-react";
@@ -24,8 +24,11 @@ function Page() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat]);
 
+
+
   // Fetch chat
   useEffect(() => {
+
     if (!chatId) return;
     setCurrentConvoId(chatId);
     const fetchChat = async () => {
@@ -34,6 +37,7 @@ function Page() {
       if (!data && chatId != 'dashboard') {
         routes.push('/')
       }
+
       setChat(data);
       setLoading(false);
     };
@@ -72,13 +76,11 @@ function Page() {
                       <div className="mb-1">{msg.userChat}</div>
                       {/* <div className="text-gray-500 text-sm">{timeAgo(msg.created_at)}</div> */}
                     </div>
-                    <div className=" font-semibold mb-5 cursor-pointer border-b-1">
+                    <div className=" font-semibold mb-5 border-b-1">
                       <h1 className="py-2 w-fit border-black border-b-2">Answer</h1>
                     </div>
                     <div className="">
-                      <div className="prose prose-sm ">
-                        <ReactMarkdown>{msg.botResponse?.text ?? ""}</ReactMarkdown>
-                      </div>
+                      <MarkdownRenderer content={msg.botResponse?.text ?? ""} />
                       <div className="text-gray-400 text-xs text-right mt-2">
                         {timeAgo(msg.created_at)}
                       </div>
