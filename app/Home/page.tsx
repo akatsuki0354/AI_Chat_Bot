@@ -5,21 +5,25 @@ import { useChatStore } from "@/services/ChatsServices"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Send } from "lucide-react";
+import Loading from "@/components/loading";
 function page() {
     const { addChat } = useChatStore();
     const { getChatsHistory } = useChatStore();
     const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<null | "sending">(null);
+    const [loading, setLoading] = useState<null | "sending" | "loadingHistory">(null);
     const [chatsHistoryData, setChatsHistoryData] = useState<any[]>([]);
     const routes = useRouter();
 
     const chatsHistory = async () => {
+        setLoading("loadingHistory");
         try {
             const history = await getChatsHistory();
             console.log("Chats History:", history);
             setChatsHistoryData(history);
         } catch (error) {
             console.error("Error fetching chats history:", error);
+        } finally {
+            setLoading(null);
         }
     };
 
@@ -33,7 +37,6 @@ function page() {
         if (!message.trim()) return;
         setMessage("");
         setLoading("sending");
-
         try {
             // Call addChat and get the new conversation ID if created
             const newChatId = await addChat(message);
@@ -56,7 +59,11 @@ function page() {
 
             <div className="flex flex-col  h-[calc(100vh-56px)] px-4 py-4 justify-between">
                 <div className="chats overflow-y-auto flex justify-center items-center h-full">
-                    {chatsHistoryData.length === 0 ? (
+                    {loading === "loadingHistory" ? (
+                        <div>
+                          <Loading />
+                        </div>
+                    ) : chatsHistoryData.length === 0 ? (
                         <div className="">
                             <h1 className="text-3xl text-center font-semibold">Welcome to Aurelius Chatbot</h1>
                             <h1 className="text-lg text-center">Ask Anything..</h1>
