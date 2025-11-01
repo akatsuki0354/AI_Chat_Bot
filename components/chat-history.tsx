@@ -57,7 +57,23 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         }
     };
 
-    const isEmpty = !localGroups || localGroups.length === 0 || localGroups.every((g: any) => !g.chats || g.chats.length === 0);
+    // Normalize groups array
+    const lg = localGroups ?? [];
+
+    // Extract all chats from all groups
+    const chats = lg.flatMap((g: any) => g?.chats ?? []);
+
+    // Count totals
+    const totalChats = chats.length;
+
+    // Helper: normalize archived values (boolean, string, number)
+    const isArchived = (value: any) => Boolean(value === true || value === "true" || value === 1);
+
+    // Count only non-archived chats
+    const activeChatsCount = chats.filter((chat: any) => !isArchived(chat?.archived)).length;
+
+    // Empty = there are chats but all of them are archived
+    const isEmpty = totalChats > 0 && activeChatsCount === 0;
 
     return (
         <div className="mb-4">

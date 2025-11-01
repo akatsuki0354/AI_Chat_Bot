@@ -17,7 +17,7 @@ export function MessageHeader({ text, createdAt }: { text: string; createdAt: st
       </div>
       <div className={cn(isMulti ? "text-md" : "text-4xl", "font-semibold")}> 
         <div className="mb-1 whitespace-pre-wrap break-words">{text}</div>
-        <div className="text-gray-500 text-sm">{timeAgo(createdAt)}</div>
+        {/* <div className="text-gray-500 text-sm">{timeAgo(createdAt)}</div> */}
       </div>
     </div>
   );
