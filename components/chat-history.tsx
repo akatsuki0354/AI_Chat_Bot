@@ -66,14 +66,14 @@ function ChatHistory({ groups }: { groups: any }) {
                             <a
                                 key={chat.id}
                                 href={chat.url} className='flex hover:bg-accent justify-between items-center py-2 px-4'>
-                                <div className=' cursor-pointer rounded-md mb-1'>
+                                <div className=' cursor-pointer rounded-md mb-1 flex-1 min-w-0'>
                                     <h1 className='text-sm line-clamp-1'>
                                         {chat.title}
                                     </h1>
                                 </div>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Ellipsis size={16} />
+                                        <Ellipsis size={16} className="shrink-0" />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-fit" align="start">
                                         <DropdownMenuItem onClick={(e) => handleDeleteChat(chat.id, e)}>
