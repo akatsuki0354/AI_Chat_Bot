@@ -17,12 +17,14 @@ export type AIResponse = {
     completionTokens: number;
 };
 
+// Define the ChatMessage type
 export type ChatMessage = {
     userChat: string;
     botResponse: AIResponse;
     created_at: string;
 };
 
+// Define the ChatStats type
 export type ChatStats = {
     totalChats: number;
     totalTokens: number;
