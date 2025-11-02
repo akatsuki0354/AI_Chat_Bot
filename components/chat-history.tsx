@@ -20,15 +20,6 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         setLocalGroups(groups ?? []);
     }, [groups]);
 
-    // Function to remove a chat from the groups
-    const removeChatFromGroups = (chatId: string) => {
-        setLocalGroups((prev: any) =>
-            prev
-                .map((group: any) => ({ ...group, chats: group.chats.filter((chat: any) => chat.id !== chatId) }))
-                .filter((group: any) => group.chats.length > 0)
-        );
-    };
-
     // Function to update a chat inside the groups
     const updateChatInGroups = (chatId: string, patch: any) => {
         setLocalGroups((prev: any) =>
@@ -43,7 +34,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
 
     // Function to handle delete chat
     const handleDeleteChat = async (chatId: string, e?: any) => {
-        removeChatFromGroups(chatId);
+       
         try {
             await deleteChat(chatId);
             router.push("/");
