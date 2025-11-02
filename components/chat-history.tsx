@@ -117,22 +117,22 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                 <form onSubmit={(e) => EditSubmit(e, chat.id, editingChatTitle || '')} className="flex-1 min-w-0">
                                                     <Input
                                                         className="
-    border-0 
-    shadow-none 
-    outline-none 
-    focus:outline-none 
-    focus:ring-0 
-    focus-visible:ring-0 
-    focus-visible:ring-offset-0 
-    ring-0 
-    ring-offset-0 
-    focus:border-transparent 
-    border-transparent 
-    bg-transparent 
-    p-0
-    m-0
-    appearance-none
-  "
+                                                                        border-0 
+                                                                        shadow-none 
+                                                                        outline-none 
+                                                                        focus:outline-none 
+                                                                        focus:ring-0 
+                                                                        focus-visible:ring-0 
+                                                                        focus-visible:ring-offset-0 
+                                                                        ring-0 
+                                                                        ring-offset-0 
+                                                                        focus:border-transparent 
+                                                                        border-transparent 
+                                                                        bg-transparent 
+                                                                        p-0
+                                                                        m-0
+                                                                        appearance-none
+                                                                    "
                                                         value={editingChatTitle}
                                                         onChange={(e) => setEditingChatTitle(e.currentTarget.value)}
                                                     />
@@ -150,11 +150,11 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                     <Ellipsis size={16} className="shrink-0 " />
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="w-fit" align="start">
-                                                    <DropdownMenuItem  onClick={() => handleEdit(chat.id, chat.title)}>
+                                                    <DropdownMenuItem onClick={() => handleEdit(chat.id, chat.title)}>
                                                         <Edit size={16} />
                                                         Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem  onClick={() => handleDeleteChat(chat.id)}>
+                                                    <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
                                                         <Trash size={16} />
                                                         Delete
                                                     </DropdownMenuItem>
