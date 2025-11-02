@@ -2,13 +2,11 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Edit, Ellipsis, Trash } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
-import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
@@ -43,43 +41,6 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         );
     };
 
-    // Function to handle real-time updates
-    useEffect(() => {
-        const channel = supabase
-            .channel('convo-realtime')
-            // Handle hard deletes
-            .on(
-                'postgres_changes',
-                { event: 'DELETE', schema: 'public', table: 'convo' },
-                (payload: any) => {
-                    const deletedId = payload?.old?.id as string;
-                    if (deletedId) removeChatFromGroups(deletedId);
-                }
-            )
-            // Handle soft deletes (archived flag set to true)
-            .on(
-                'postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'convo' },
-                (payload: any) => {
-                    const updated = payload?.new as any;
-                    const archivedVal = updated?.archived;
-                    const becameArchived = Boolean(
-                        archivedVal === true || archivedVal === 'true' || archivedVal === 1
-                    );
-                    if (becameArchived && updated?.id) {
-                        removeChatFromGroups(updated.id as string);
-                    } else if (updated?.id) {
-                        // Realtime title update
-                        updateChatInGroups(updated.id as string, { title: updated.title });
-                    }
-                }
-            )
-            .subscribe();
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, []);
-
     // Function to handle delete chat
     const handleDeleteChat = async (chatId: string, e?: any) => {
         removeChatFromGroups(chatId);
@@ -109,10 +70,13 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     // Empty = there are chats but all of them are archived
     const isEmpty = totalChats > 0 && activeChatsCount === 0;
 
+    // Handle edit chat
     const handleEdit = async (chatId: string, Title: string) => {
         setEditingChatId(chatId);
         setEditingChatTitle(Title);
     };
+
+    // Handle edit submit
     const EditSubmit = async (e: React.FormEvent, chatId: string, newTitle: string) => {
         e.preventDefault();
         try {

@@ -8,6 +8,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MessageHeader } from "@/components/message-header";
 import ChatComposer from "@/components/chat-composer";
+import CopyToClipboardButton from '@/components/CopyToClipboardButton';
 function Page() {
   const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();
@@ -62,7 +63,7 @@ function Page() {
     }
   };
 
-  
+
 
   return (
     <ProtectedLayout>
@@ -79,8 +80,11 @@ function Page() {
                     </div>
                     <div className="">
                       <MarkdownRenderer content={msg.botResponse?.text ?? ""} />
-                      <div className="text-gray-400 text-xs text-right mt-2">
-                        {timeAgo(msg.created_at)}
+                      <div className="flex justify-between">
+                        <CopyToClipboardButton text={msg.botResponse?.text ?? ""} />
+                        <div className="text-gray-400 text-xs text-right mt-2">
+                          {timeAgo(msg.created_at)}
+                        </div>
                       </div>
                     </div>
                   </div>
