@@ -95,27 +95,40 @@ export function ChartAreaInteractive() {
     load()
   }, [getChatsHistory])
 
-  const filteredData = useMemo(() => {
+  const { filteredData, timeRangeLabel } = useMemo(() => {
     let daysToSubtract = 90
+    let label = "3 months"
+    
     if (timeRange === "30d") {
       daysToSubtract = 30
+      label = "30 days"
     } else if (timeRange === "7d") {
       daysToSubtract = 7
+      label = "7 days"
     }
+    
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - daysToSubtract)
-    return data.filter((item) => new Date(item.date) >= startDate)
+    startDate.setHours(0, 0, 0, 0) // Start of the day
+    
+    const filtered = data.filter((item) => {
+      const itemDate = new Date(item.date)
+      itemDate.setHours(0, 0, 0, 0)
+      return itemDate >= startDate
+    })
+    
+    return { filteredData: filtered, timeRangeLabel: label }
   }, [data, timeRange])
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card w-full">
       <CardHeader>
-        <CardTitle>Token Usage Graph</CardTitle>
+        <CardTitle>Token Usage</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
+            {timeRange === '7d' ? 'Weekly' : timeRange === '30d' ? 'Monthly' : 'Quarterly'} overview
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden">Last {timeRangeLabel}</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -195,7 +208,8 @@ export function ChartAreaInteractive() {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                minTickGap={32}
+                minTickGap={timeRange === '7d' ? 0 : 16}
+                interval={timeRange === '7d' ? 0 : 'preserveEnd'}
                 tickFormatter={(value) => {
                   const date = new Date(value)
                   return date.toLocaleDateString("en-US", {
