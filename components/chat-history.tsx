@@ -6,13 +6,19 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Edit, Ellipsis, Trash } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Input } from "./ui/input";
+import { useRouter } from 'next/navigation';
+
+
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
+    const router = useRouter();
     const { deleteChat, updateChatTitle } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups ?? []);
     const [editingChatId, setEditingChatId] = useState<string | null>(null);
     const [editingChatTitle, setEditingChatTitle] = useState<string>('');
+    const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+
 
     useEffect(() => {
         setLocalGroups(groups ?? []);
@@ -31,7 +37,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     };
 
     // Function to handle delete chat
-   
+
     const handleDeleteChat = async (chatId: string, e?: any) => {
         // 1️⃣ Optimistically remove from local state first
         setLocalGroups((prev: any) =>
@@ -122,7 +128,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                 <div key={chat.id}>
                                     {!isdeleteChat(chat.deleteChat) && (
                                         <div
-                                            className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 justify-between items-center py-2 px-4`}>
+                                            className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 px-4 justify-between items-center `}>
                                             {editingChatId == chat.id ? (
                                                 <form onSubmit={(e) => EditSubmit(e, chat.id, editingChatTitle || '')} className="flex-1 min-w-0">
                                                     <Input
@@ -146,12 +152,43 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                         value={editingChatTitle}
                                                         onChange={(e) => setEditingChatTitle(e.currentTarget.value)}
                                                     />
-
-
                                                 </form>
                                             ) : (
-                                                <a href={chat.url} className="flex-1 min-w-0">
-                                                    <h1 className="text-sm line-clamp-1 group">{chat.title}</h1>
+                                                <a
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+
+                                                        // Clear any existing timeout
+                                                        if (clickTimeout.current) {
+                                                            clearTimeout(clickTimeout.current);
+                                                            clickTimeout.current = null;
+                                                        }
+
+                                                        // Set a new timeout for single click
+                                                        clickTimeout.current = setTimeout(() => {
+                                                            // Only navigate if not a double click
+                                                            if (clickTimeout.current) {
+                                                                router.push(`/${chat.id}`);
+                                                            }
+                                                        }, 200); // 200ms delay to detect double click
+                                                    }}
+                                                    onDoubleClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        
+                                                        // Clear the single click timeout
+                                                        if (clickTimeout.current) {
+                                                            clearTimeout(clickTimeout.current);
+                                                            clickTimeout.current = null;
+                                                        }
+                                                        
+                                                        // Handle edit on double click
+                                                        handleEdit(chat.id, chat.title);
+                                                    }}
+                                                    className="py-2 flex-1 min-w-0  line-clamp-1 text-sm cursor-pointer"
+                                                >
+                                                    {chat.title}
                                                 </a>
                                             )}
 
@@ -162,7 +199,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                 <DropdownMenuContent className="w-fit" align="start">
                                                     <DropdownMenuItem onClick={() => handleEdit(chat.id, chat.title)}>
                                                         <Edit size={16} />
-                                                        Edit
+                                                        Rename
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
                                                         <Trash size={16} />
