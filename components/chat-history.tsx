@@ -37,33 +37,17 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     };
 
     // Function to handle delete chat
-
     const handleDeleteChat = async (chatId: string, e?: any) => {
-        // 1️⃣ Optimistically remove from local state first
         setLocalGroups((prev: any) =>
             prev.map((group: any) => ({
                 ...group,
                 chats: group.chats.filter((chat: any) => chat.id !== chatId)
             }))
         );
-
         try {
-            // 2️⃣ Then call Supabase or your store function
             await deleteChat(chatId);
         } catch (error) {
             console.error("Error deleting chat:", error);
-            // 3️⃣ Optional: revert if delete failed
-            setLocalGroups((prev: any) =>
-                prev.map((group: any) => ({
-                    ...group,
-                    chats: [
-                        ...group.chats,
-                        ...((groups.find((g: any) =>
-                            g.chats.some((c: any) => c.id === chatId)
-                        )?.chats.filter((c: any) => c.id === chatId)) ?? [])
-                    ]
-                }))
-            );
         }
     };
 
@@ -176,13 +160,13 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                     onDoubleClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        
+
                                                         // Clear the single click timeout
                                                         if (clickTimeout.current) {
                                                             clearTimeout(clickTimeout.current);
                                                             clickTimeout.current = null;
                                                         }
-                                                        
+
                                                         // Handle edit on double click
                                                         handleEdit(chat.id, chat.title);
                                                     }}
