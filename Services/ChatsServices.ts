@@ -42,8 +42,8 @@ export type Chat = {
     addChat: (userChat: string) => Promise<string | null>;
     aiResponse: (userChat: string) => Promise<AIResponse>;
     getChatById: (chatId: string) => Promise<{ id: string, chats: ChatMessage[] } | null>;
-    getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[], archived: boolean }[]>;
-    deleteChat: (chatId: string, archived?: boolean) => Promise<void>;
+    getChatsHistory: () => Promise<{ id: string, chats: ChatMessage[], deleteChat: boolean }[]>;
+    deleteChat: (chatId: string, deleteChat?: boolean) => Promise<void>;
     getChatStats: () => Promise<ChatStats>;
     updateChatTitle: (chatId: string, newTitle: string) => Promise<void>;
 
@@ -108,13 +108,13 @@ export const useChatStore = create<Chat>((set, get) => ({
 
         const { data: chats, error } = await supabase
             .from('convo')
-            .select('id, chats, archived, title')
+            .select('id, chats, deleteChat, title')
             .eq('uid', authUserId)
         if (error) {
             console.error('Error fetching chats:', error);
             return [];
         }
-        return (chats ?? []) as { id: string, chats: ChatMessage[], archived: boolean }[];
+        return (chats ?? []) as { id: string, chats: ChatMessage[], deleteChat: boolean }[];
     },
 
     // Function to add a chat to the database
@@ -181,7 +181,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     deleteChat: async (chatId) => {
         const { data, error } = await supabase
             .from('convo')
-            .update({ archived: true })
+            .update({ deleteChat: true })
             .eq('id', chatId)
             .select()
             .single();

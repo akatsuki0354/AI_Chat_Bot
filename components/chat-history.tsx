@@ -7,27 +7,16 @@ import {
 import { Edit, Ellipsis, Trash } from 'lucide-react';
 import { useChatStore } from '@/services/ChatsServices';
 import { useEffect, useState } from 'react';
-import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
 function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     const { deleteChat, updateChatTitle } = useChatStore();
     const [localGroups, setLocalGroups] = useState(groups ?? []);
     const [editingChatId, setEditingChatId] = useState<string | null>(null);
     const [editingChatTitle, setEditingChatTitle] = useState<string>('');
-    const router = useRouter();
 
     useEffect(() => {
         setLocalGroups(groups ?? []);
     }, [groups]);
-
-    // Function to remove a chat from the groups
-    const removeChatFromGroups = (chatId: string) => {
-        setLocalGroups((prev: any) =>
-            prev
-                .map((group: any) => ({ ...group, chats: group.chats.filter((chat: any) => chat.id !== chatId) }))
-                .filter((group: any) => group.chats.length > 0)
-        );
-    };
 
     // Function to update a chat inside the groups
     const updateChatInGroups = (chatId: string, patch: any) => {
@@ -42,15 +31,36 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     };
 
     // Function to handle delete chat
+   
     const handleDeleteChat = async (chatId: string, e?: any) => {
-        removeChatFromGroups(chatId);
+        // 1️⃣ Optimistically remove from local state first
+        setLocalGroups((prev: any) =>
+            prev.map((group: any) => ({
+                ...group,
+                chats: group.chats.filter((chat: any) => chat.id !== chatId)
+            }))
+        );
+
         try {
+            // 2️⃣ Then call Supabase or your store function
             await deleteChat(chatId);
-            router.push("/");
         } catch (error) {
             console.error("Error deleting chat:", error);
+            // 3️⃣ Optional: revert if delete failed
+            setLocalGroups((prev: any) =>
+                prev.map((group: any) => ({
+                    ...group,
+                    chats: [
+                        ...group.chats,
+                        ...((groups.find((g: any) =>
+                            g.chats.some((c: any) => c.id === chatId)
+                        )?.chats.filter((c: any) => c.id === chatId)) ?? [])
+                    ]
+                }))
+            );
         }
     };
+
 
     // Normalize groups array
     const lg = localGroups ?? [];
@@ -61,13 +71,13 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
     // Count totals
     const totalChats = chats.length;
 
-    // Helper: normalize archived values (boolean, string, number)
-    const isArchived = (value: any) => Boolean(value === true || value === "true" || value === 1);
+    // Helper: normalize deleteChat values (boolean, string, number)
+    const isdeleteChat = (value: any) => Boolean(value === true || value === "true" || value === 1);
 
-    // Count only non-archived chats
-    const activeChatsCount = chats.filter((chat: any) => !isArchived(chat?.archived)).length;
+    // Count only non-deleteChat chats
+    const activeChatsCount = chats.filter((chat: any) => !isdeleteChat(chat?.deleteChat)).length;
 
-    // Empty = there are chats but all of them are archived
+    // Empty = there are chats but all of them are deleteChat
     const isEmpty = totalChats > 0 && activeChatsCount === 0;
 
     // Handle edit chat
@@ -98,7 +108,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
             {loading ? (
                 <div className="px-4 py-2 justify-center text-sm text-muted-foreground flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
-                    <span>Loading chats...</span>
+                    <span>Loading chat history...</span>
                 </div>
             ) : isEmpty ? (
                 <div className="px-4 py-2 text-sm text-muted-foreground">
@@ -110,7 +120,7 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                         <div >
                             {group.chats.map((chat: any) => (
                                 <div key={chat.id}>
-                                    {!isArchived(chat.archived) && (
+                                    {!isdeleteChat(chat.deleteChat) && (
                                         <div
                                             className={`${editingChatId == chat.id ? 'bg-gray-200' : ''} flex hover:bg-gray-100 justify-between items-center py-2 px-4`}>
                                             {editingChatId == chat.id ? (
@@ -150,11 +160,11 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                     <Ellipsis size={16} className="shrink-0 " />
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="w-fit" align="start">
-                                                    <DropdownMenuItem  onClick={() => handleEdit(chat.id, chat.title)}>
+                                                    <DropdownMenuItem onClick={() => handleEdit(chat.id, chat.title)}>
                                                         <Edit size={16} />
                                                         Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem  onClick={() => handleDeleteChat(chat.id)}>
+                                                    <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
                                                         <Trash size={16} />
                                                         Delete
                                                     </DropdownMenuItem>
