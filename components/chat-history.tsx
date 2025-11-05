@@ -46,6 +46,10 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
         );
         try {
             await deleteChat(chatId);
+            // Navigate to home page if the deleted chat is the current one
+            if (window.location.pathname === `/${chatId}`) {
+                router.push('/');
+            }
         } catch (error) {
             console.error("Error deleting chat:", error);
         }
