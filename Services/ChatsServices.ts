@@ -91,7 +91,7 @@ export const useChatStore = create<Chat>((set, get) => ({
     updateChatTitle: async (chatId, newTitle) => {
         const { data, error } = await supabase
             .from('convo')
-            .update({ title: newTitle })
+            .update({ title: newTitle, created_at: new Date().toISOString() })
             .eq('id', chatId);
         if (error) {
             console.error('Error updating chat title:', error);
@@ -108,13 +108,15 @@ export const useChatStore = create<Chat>((set, get) => ({
 
         const { data: chats, error } = await supabase
             .from('convo')
-            .select('id, chats, deleteChat, title')
+            .select('id, chats, deleteChat, title, created_at')
             .eq('uid', authUserId)
+            .order('created_at', { ascending: false });
+            
         if (error) {
             console.error('Error fetching chats:', error);
             return [];
         }
-        return (chats ?? []) as { id: string, chats: ChatMessage[], deleteChat: boolean }[];
+        return (chats ?? []) as { id: string, chats: ChatMessage[], deleteChat: boolean, created_at: string }[];
     },
 
     // Function to add a chat to the database
@@ -148,7 +150,10 @@ export const useChatStore = create<Chat>((set, get) => ({
 
             const { error: updateError } = await supabase
                 .from('convo')
-                .update({ chats: updatedChats })
+                .update({ 
+                    chats: updatedChats,
+                    created_at: new Date().toISOString()  // Update the updated_at timestamp
+                })
                 .eq('id', convoId);
 
             if (updateError) {
