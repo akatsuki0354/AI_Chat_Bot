@@ -60,9 +60,11 @@ export const useChatStore = create<Chat>((set, get) => ({
     aiResponse: async (userChat) => {
         const response = await openai.chat.completions.create({
             model: 'openai/gpt-oss-20b',
-            messages: [{ role: 'user', content: userChat }],
+            messages: [
+                { role: "system", content: "You are Aureluis AI, a helpful and wise assistant." },
+                { role: "user", content: userChat }
+            ],
         });
-
         const promptTokens = response.usage?.prompt_tokens ?? 0;
         const completionTokens = response.usage?.completion_tokens ?? 0;
         const totalTokens = response.usage?.total_tokens ?? promptTokens + completionTokens;
@@ -111,7 +113,7 @@ export const useChatStore = create<Chat>((set, get) => ({
             .select('id, chats, deleteChat, title, created_at')
             .eq('uid', authUserId)
             .order('created_at', { ascending: false });
-            
+
         if (error) {
             console.error('Error fetching chats:', error);
             return [];
@@ -150,7 +152,7 @@ export const useChatStore = create<Chat>((set, get) => ({
 
             const { error: updateError } = await supabase
                 .from('convo')
-                .update({ 
+                .update({
                     chats: updatedChats,
                     created_at: new Date().toISOString()  // Update the updated_at timestamp
                 })
