@@ -186,8 +186,8 @@ function ChatHistory({ groups, loading }: { groups: any; loading?: boolean }) {
                                                         Rename
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteChat(chat.id)}>
-                                                        <Trash size={16} />
-                                                        Delete
+                                                        <Trash size={16} className="text-red-500 hover:text-red-600"/>
+                                                       <p className="text-red-500 hover:text-red-600"> Delete</p>
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
