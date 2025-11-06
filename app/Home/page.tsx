@@ -1,17 +1,37 @@
 "use client";
 import ProtectedLayout from "@/components/PretectedLayout"
 import { useChatStore } from "@/services/ChatsServices"
-import {useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ChatComposer from "@/components/chat-composer";
+import Loading from "@/components/loading";
 function page() {
     const { addChat } = useChatStore();
+    const { getChatsHistory } = useChatStore();
     const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<null | "sending">(null);
+    const [loading, setLoading] = useState<null | "sending" | "loadingHistory">(null);
+    const [chatsHistoryData, setChatsHistoryData] = useState<any[]>([]);
     const routes = useRouter();
 
+    const chatsHistory = async () => {
+        setLoading("loadingHistory");
+        try {
+            const history = await getChatsHistory();
+            console.log("Chats History:", history);
+            setChatsHistoryData(history);
+        } catch (error) {
+            console.error("Error fetching chats history:", error);
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    useEffect(() => {
+        chatsHistory();
+    }, []);
+
     // Function to handle sending a message
-    const handleSend = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message.trim()) return;
         setMessage("");
@@ -32,15 +52,25 @@ function page() {
         }
     };
 
+
     return (
         <ProtectedLayout>
 
             <div className="flex flex-col gap-14 h-[calc(100vh-56px)] px-4 py-4 justify-center">
                 <div >
-                    <div>
-                        <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
-                        <p className="text-center text-gray-500">Ask me anything about what you want to know</p>
-                    </div>
+                    {loading === "loadingHistory" ? (
+                        <div>
+                            <Loading />
+                        </div>
+                    ) : chatsHistoryData.length === 0 ? (
+                        <div className="">
+                            <h1 className="text-3xl text-center font-semibold">Welcome to Aurelius Chatbot</h1>
+                        </div>
+                    ) : (
+                        <div>
+                            <h1 className="text-3xl text-center font-semibold">Aurelius Chatbot</h1>
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleSend}>
@@ -60,6 +90,7 @@ function page() {
                     </div>
                 </form>
             </div>
+
         </ProtectedLayout>
     )
 }
