@@ -2,22 +2,22 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/services/Auth'
-import { AppSidebar } from '@/components/app-sidebar'
-import { NavActions } from '@/components/nav-actions'
-import Loading from '@/components/loading'
+import { useAuth } from '../services/Auth'
+import { AppSidebar } from '../components/app-sidebar'
+import { NavActions } from '../components/nav-actions'
+import Loading from '../components/loading'
 import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbList,
     BreadcrumbPage,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
+} from '../components/ui/breadcrumb'
+import { Separator } from '../components/ui/separator'
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
-} from '@/components/ui/sidebar'
+} from '../components/ui/sidebar'
 
 export default function ProtectedLayout({
     children,

@@ -30,7 +30,7 @@ import {
   ToggleGroupItem,
 } from '@/components/ui/toggle-group'
 export const description = "An interactive area chart"
-import { useChatStore } from '@/services/ChatsServices'
+import { useChatStore } from '../services/ChatsServices'
 type ChartPoint = {
   date: string
   prompt: number // prompt tokens

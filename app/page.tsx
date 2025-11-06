@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth } from "./app/services/Auth";
-import Loading from "@/components/loading";
+import { useAuth } from "../services/Auth";
+import Loading from "../components/loading";
 import Home from "./Home/page";
 import LoginPage from "./LogIn/LogIn";
 export default function Page() {

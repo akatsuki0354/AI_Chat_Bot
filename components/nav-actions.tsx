@@ -16,12 +16,12 @@ import {
   Trash,
   Trash2,
 } from "lucide-react"
-import { Button } from '@/components/ui/button'
+import { Button } from '../components/ui/button'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
+} from '../components/ui/popover'
 import {
   Sidebar,
   SidebarContent,
@@ -30,11 +30,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
+} from '../components/ui/sidebar'
 import { useEffect, useState } from "react"
-import { useAuth } from "@/services/Auth"
+import { useAuth } from "../services/Auth"
 import Image from "next/image"
-import { getUser } from "@/services/Auth"
+import { getUser } from "../services/Auth"
 const data = [
   [
     {

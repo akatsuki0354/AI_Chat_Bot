@@ -1,14 +1,14 @@
 "use client";
 
-import ProtectedLayout from "@/components/PretectedLayout";
-import { useChatStore } from "@/services/ChatsServices";
-import { timeAgo } from "@/utils";
-import MarkdownRenderer from "@/components/markdown-renderer";
+import ProtectedLayout from "../../components/PretectedLayout";
+import { useChatStore } from "../../services/ChatsServices";
+import { timeAgo } from "../../utils";
+import MarkdownRenderer from "../../components/markdown-renderer";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MessageHeader } from "@/components/message-header";
-import ChatComposer from "@/components/chat-composer";
-import CopyToClipboardButton from '@/components/CopyToClipboardButton';
+import { MessageHeader } from "../../components/message-header";
+import ChatComposer from "../../components/chat-composer";
+import CopyToClipboardButton from '../../components/CopyToClipboardButton';
 function Page() {
   const { addChat, setCurrentConvoId } = useChatStore();
   const params = useParams();

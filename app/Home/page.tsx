@@ -1,10 +1,10 @@
 "use client";
-import ProtectedLayout from "@/components/PretectedLayout"
-import { useChatStore } from "@/services/ChatsServices"
+import ProtectedLayout from "../../components/PretectedLayout"
+import { useChatStore } from "../../services/ChatsServices"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ChatComposer from "@/components/chat-composer";
-import Loading from "@/components/loading";
+import ChatComposer from "../../components/chat-composer";
+import Loading from "../../components/loading";
 function page() {
     const { addChat } = useChatStore();
     const { getChatsHistory } = useChatStore();
