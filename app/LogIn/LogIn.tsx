@@ -1,7 +1,7 @@
 "use client"
 import { GalleryVerticalEnd } from "lucide-react"
-import SignInForm from "@/templates/SignIn"
-import SignUpForm from "@/templates/SignUp"
+import SignInForm from "@/template/SignIn"
+import SignUpForm from "@/template/SignUp"
 import { useState } from "react";
 export default function LoginPage() {
     const [isSignUpPage, setIsSignUpPage] = useState(false);
