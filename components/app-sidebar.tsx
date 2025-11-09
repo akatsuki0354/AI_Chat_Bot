@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import ChatHistory from "@/components/chat-history"
-import { useChatStore } from "@/services/ChatsServices"
+import { useChatStore } from "@/service/ChatsServices"
 import {
   Sidebar,
   SidebarContent,

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../services/Auth'
+import { useAuth } from '../service/Auth'
 import { AppSidebar } from '../components/app-sidebar'
 import { NavActions } from '../components/nav-actions'
 import Loading from '../components/loading'

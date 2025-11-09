@@ -1,4 +1,4 @@
-import { ChatStats } from '@/services/ChatsServices'
+import { ChatStats } from '@/service/ChatsServices'
 
 export type DashboardCardData = {
   title: string

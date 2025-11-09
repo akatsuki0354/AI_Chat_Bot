@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useChatStore, ChatStats } from '@/services/ChatsServices'
+import { useChatStore, ChatStats } from '@/service/ChatsServices'
 import { useEffect, useState } from 'react'
 import { createDashboardCardsData } from '@/constants/dashboard-cards'
 import { Skeleton } from "./ui/skeleton"

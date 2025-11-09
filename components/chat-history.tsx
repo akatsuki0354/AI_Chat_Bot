@@ -5,7 +5,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Edit, Ellipsis, Trash } from 'lucide-react';
-import { useChatStore } from '@/services/ChatsServices';
+import { useChatStore } from '@/service/ChatsServices';
 import { useEffect, useState, useRef } from 'react';
 import { Input } from "./ui/input";
 import { useRouter } from 'next/navigation';

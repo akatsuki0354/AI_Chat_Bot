@@ -1,6 +1,6 @@
 "use client";
 import ProtectedLayout from "../../components/PretectedLayout"
-import { useChatStore } from "../../services/ChatsServices"
+import { useChatStore } from "../../service/ChatsServices"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ChatComposer from "../../components/chat-composer";

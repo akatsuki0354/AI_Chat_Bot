@@ -1,7 +1,7 @@
 "use client";
 
 import ProtectedLayout from "../../components/PretectedLayout";
-import { useChatStore } from "../../services/ChatsServices";
+import { useChatStore } from "../../service/ChatsServices";
 import { timeAgo } from "../../utils";
 import MarkdownRenderer from "../../components/markdown-renderer";
 import React, { useEffect, useState, useRef } from "react";

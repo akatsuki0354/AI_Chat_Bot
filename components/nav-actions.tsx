@@ -32,9 +32,9 @@ import {
   SidebarMenuItem,
 } from '../components/ui/sidebar'
 import { useEffect, useState } from "react"
-import { useAuth } from "../services/Auth"
+import { useAuth } from "../service/Auth"
 import Image from "next/image"
-import { getUser } from "../services/Auth"
+import { getUser } from "../service/Auth"
 const data = [
   [
     {
