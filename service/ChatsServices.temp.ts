@@ -3,7 +3,7 @@ import { create } from "zustand";
 import OpenAI from 'openai';
 
 // Initialize OpenAI client
-const openai = new OpenAI({
+export const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY!,
     dangerouslyAllowBrowser: true,
@@ -32,8 +32,6 @@ export type ChatStats = {
     completionTokens: number;
     date: string;
 };
-
-
 
 export type Chat = {
     currentConvoId: string | null;
@@ -71,8 +69,6 @@ export const useChatStore = create<Chat>((set, get) => ({
         const text = response.choices?.[0]?.message?.content ?? '';
         return { text, totalTokens, promptTokens, completionTokens };
     },
-
-
 
 
     // Function to fetch a single chat by id
